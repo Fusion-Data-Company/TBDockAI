@@ -156,7 +156,7 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
   return (
     <div className="space-y-6">
       {/* Pipeline Progress Bar */}
-      <div className="relative h-4 bg-secondary/20 rounded-full overflow-hidden border border-border/30">
+      <div className="relative h-4 bg-secondary/20 rounded-full overflow-hidden border border-border/30 mb-6">
         <div className="absolute inset-0 flex">
           {STAGES.map((stage, idx) => {
             const stageOpps = getOpportunitiesByStage(stage.id);
@@ -181,24 +181,6 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
             );
           })}
         </div>
-      </div>
-
-      {/* Pipeline Stats Summary */}
-      <div className="grid grid-cols-5 gap-3">
-        {STAGES.map((stage) => {
-          const stageOpps = getOpportunitiesByStage(stage.id);
-          const stageValue = getStageValue(stage.id);
-          return (
-            <div key={stage.id} className={`${stage.lightColor} ${stage.borderColor} border rounded-lg p-3`}>
-              <div className="flex items-center space-x-2 mb-1">
-                <span className="text-lg">{stage.icon}</span>
-                <span className={`text-xs font-bold ${stage.textColor}`}>{stage.label}</span>
-              </div>
-              <div className={`text-xl font-bold ${stage.textColor}`}>{formatCurrency(stageValue)}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{stageOpps.length} deals</div>
-            </div>
-          );
-        })}
       </div>
 
       {/* Kanban Columns - Fixed Width Container */}
