@@ -182,6 +182,21 @@ export const aiContentGenerations = pgTable("ai_content_generations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Social media scheduled posts table
+export const socialMediaPosts = pgTable("social_media_posts", {
+  id: serial("id").primaryKey(),
+  platform: varchar("platform", { length: 50 }).notNull(), // facebook, instagram, linkedin, twitter
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  hashtags: text("hashtags").array(),
+  scheduledFor: timestamp("scheduled_for"),
+  status: varchar("status", { length: 20 }).default('scheduled'), // scheduled, published, failed
+  publishedAt: timestamp("published_at"),
+  aiContentId: integer("ai_content_id").references(() => aiContentGenerations.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const contactsRelations = relations(contacts, ({ many }) => ({
   opportunities: many(opportunities),
@@ -291,6 +306,12 @@ export const insertAIContentGenerationSchema = createInsertSchema(aiContentGener
   createdAt: true,
 });
 
+export const insertSocialMediaPostSchema = createInsertSchema(socialMediaPosts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -318,3 +339,6 @@ export type MarketingCampaign = typeof marketingCampaigns.$inferSelect;
 
 export type InsertAIContentGeneration = z.infer<typeof insertAIContentGenerationSchema>;
 export type AIContentGeneration = typeof aiContentGenerations.$inferSelect;
+
+export type InsertSocialMediaPost = z.infer<typeof insertSocialMediaPostSchema>;
+export type SocialMediaPost = typeof socialMediaPosts.$inferSelect;

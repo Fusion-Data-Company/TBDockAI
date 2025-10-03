@@ -701,6 +701,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email sequence API
+  app.get("/api/sequences", isAuthenticated, async (req, res) => {
+    try {
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const sequences = emailSequenceService.getSequences();
+      res.json(sequences);
+    } catch (error) {
+      console.error("Error fetching sequences:", error);
+      res.status(500).json({ message: "Failed to fetch sequences" });
+    }
+  });
+
+  app.get("/api/sequences/:id", isAuthenticated, async (req, res) => {
+    try {
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const sequence = emailSequenceService.getSequenceById(req.params.id);
+
+      if (!sequence) {
+        return res.status(404).json({ message: "Sequence not found" });
+      }
+
+      const analytics = emailSequenceService.getSequenceAnalytics(req.params.id);
+      res.json({ ...sequence, analytics });
+    } catch (error) {
+      console.error("Error fetching sequence:", error);
+      res.status(500).json({ message: "Failed to fetch sequence" });
+    }
+  });
+
+  app.post("/api/sequences/enroll", isAuthenticated, async (req, res) => {
+    try {
+      const { contactId, sequenceId } = req.body;
+
+      if (!contactId || !sequenceId) {
+        return res.status(400).json({ message: "Contact ID and sequence ID are required" });
+      }
+
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const enrollment = emailSequenceService.enrollContact(contactId, sequenceId);
+
+      res.json({ success: true, enrollment });
+    } catch (error) {
+      console.error("Error enrolling contact:", error);
+      res.status(500).json({ message: "Failed to enroll contact" });
+    }
+  });
+
+  app.post("/api/sequences/auto-enroll", isAuthenticated, async (req, res) => {
+    try {
+      const { contactId, trigger } = req.body;
+
+      const contact = await storage.getContactById(contactId);
+      if (!contact) {
+        return res.status(404).json({ message: "Contact not found" });
+      }
+
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const enrollments = emailSequenceService.autoEnroll(contact, trigger);
+
+      res.json({ success: true, enrollments });
+    } catch (error) {
+      console.error("Error auto-enrolling contact:", error);
+      res.status(500).json({ message: "Failed to auto-enroll contact" });
+    }
+  });
+
+  app.get("/api/sequences/enrollments/:contactId", isAuthenticated, async (req, res) => {
+    try {
+      const contactId = parseInt(req.params.contactId);
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const enrollments = emailSequenceService.getContactEnrollments(contactId);
+
+      res.json(enrollments);
+    } catch (error) {
+      console.error("Error fetching enrollments:", error);
+      res.status(500).json({ message: "Failed to fetch enrollments" });
+    }
+  });
+
+  app.post("/api/sequences/enrollment/:id/pause", isAuthenticated, async (req, res) => {
+    try {
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const success = emailSequenceService.pauseEnrollment(req.params.id);
+
+      res.json({ success });
+    } catch (error) {
+      console.error("Error pausing enrollment:", error);
+      res.status(500).json({ message: "Failed to pause enrollment" });
+    }
+  });
+
+  app.post("/api/sequences/enrollment/:id/resume", isAuthenticated, async (req, res) => {
+    try {
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const success = emailSequenceService.resumeEnrollment(req.params.id);
+
+      res.json({ success });
+    } catch (error) {
+      console.error("Error resuming enrollment:", error);
+      res.status(500).json({ message: "Failed to resume enrollment" });
+    }
+  });
+
+  app.post("/api/sequences/enrollment/:id/cancel", isAuthenticated, async (req, res) => {
+    try {
+      const { emailSequenceService } = await import('./services/emailSequences');
+      const success = emailSequenceService.cancelEnrollment(req.params.id);
+
+      res.json({ success });
+    } catch (error) {
+      console.error("Error cancelling enrollment:", error);
+      res.status(500).json({ message: "Failed to cancel enrollment" });
+    }
+  });
+
+  // Social media posts API
+  app.get("/api/social-posts", isAuthenticated, async (req, res) => {
+    try {
+      const posts = await storage.getSocialMediaPosts();
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching social posts:", error);
+      res.status(500).json({ message: "Failed to fetch social posts" });
+    }
+  });
+
+  app.post("/api/social-posts", isAuthenticated, async (req, res) => {
+    try {
+      const post = await storage.createSocialMediaPost(req.body);
+      res.json(post);
+    } catch (error) {
+      console.error("Error creating social post:", error);
+      res.status(500).json({ message: "Failed to create social post" });
+    }
+  });
+
+  app.delete("/api/social-posts/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteSocialMediaPost(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting social post:", error);
+      res.status(500).json({ message: "Failed to delete social post" });
+    }
+  });
+
   // Serve uploaded files
   const express_static = await import('express');
   const { storageService } = await import('./services/storage');

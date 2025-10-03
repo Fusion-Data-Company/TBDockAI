@@ -444,6 +444,23 @@ export class DatabaseStorage implements IStorage {
       .set({ isActive: false })
       .where(eq(documents.id, id));
   }
+
+  // Social media posts operations
+  async createSocialMediaPost(post: any): Promise<any> {
+    const { socialMediaPosts } = await import('@shared/schema');
+    const [newPost] = await db.insert(socialMediaPosts).values(post).returning();
+    return newPost;
+  }
+
+  async getSocialMediaPosts(): Promise<any[]> {
+    const { socialMediaPosts } = await import('@shared/schema');
+    return db.select().from(socialMediaPosts).orderBy(desc(socialMediaPosts.scheduledFor));
+  }
+
+  async deleteSocialMediaPost(id: number): Promise<void> {
+    const { socialMediaPosts } = await import('@shared/schema');
+    await db.delete(socialMediaPosts).where(eq(socialMediaPosts.id, id));
+  }
 }
 
 export const storage = new DatabaseStorage();

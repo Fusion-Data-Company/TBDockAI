@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -15,6 +16,7 @@ export default function AIAgents() {
   const [prompt, setPrompt] = useState('');
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [contentType, setContentType] = useState<string>('');
+  const [selectedContent, setSelectedContent] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -424,8 +426,9 @@ You represent a craftsman-owned business that values quality, integrity, and cus
                       {aiContent.map((content: any) => (
                         <div 
                           key={content.id} 
-                          className="flex items-start space-x-4 p-4 bg-secondary/50 rounded-xl hover-lift"
+                          className="flex items-start space-x-4 p-4 bg-secondary/50 rounded-xl hover-lift cursor-pointer"
                           data-testid={`card-content-${content.id}`}
+                          onClick={() => setSelectedContent(content)}
                         >
                           <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
                             <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -471,6 +474,75 @@ You represent a craftsman-owned business that values quality, integrity, and cus
           )}
         </div>
       </main>
+
+      {/* Content View Dialog */}
+      <Dialog open={!!selectedContent} onOpenChange={(open) => !open && setSelectedContent(null)}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-foreground" data-testid="dialog-content-title">
+              {selectedContent?.title || 'Untitled Content'}
+            </DialogTitle>
+            <DialogDescription className="flex items-center gap-4 text-sm">
+              <Badge variant={selectedContent?.status === 'published' ? 'default' : 'secondary'}>
+                {selectedContent?.status}
+              </Badge>
+              <span className="text-muted-foreground">
+                {selectedContent?.agentType} Agent • {selectedContent?.contentType || 'General'}
+              </span>
+              <span className="text-muted-foreground">
+                {selectedContent?.model}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-6 space-y-6">
+            {selectedContent?.prompt && (
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2">Original Prompt:</h4>
+                <div className="p-4 bg-secondary/50 rounded-lg">
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selectedContent.prompt}</p>
+                </div>
+              </div>
+            )}
+            
+            <div>
+              <h4 className="text-sm font-semibold text-foreground mb-2">Generated Content:</h4>
+              <div className="p-6 bg-card border border-border rounded-lg">
+                <div className="prose prose-invert max-w-none" data-testid="dialog-generated-content">
+                  {selectedContent?.generatedContent ? (
+                    <div className="whitespace-pre-wrap text-foreground leading-relaxed">
+                      {selectedContent.generatedContent}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground italic">No content generated yet</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {selectedContent?.metadata && (
+              <div>
+                <h4 className="text-sm font-semibold text-foreground mb-2">Metadata:</h4>
+                <div className="p-4 bg-secondary/50 rounded-lg">
+                  <pre className="text-xs text-muted-foreground overflow-x-auto">
+                    {JSON.stringify(selectedContent.metadata, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between pt-4 border-t border-border">
+              <div className="text-xs text-muted-foreground">
+                Created: {selectedContent && new Date(selectedContent.createdAt).toLocaleString()}
+                {selectedContent?.publishedAt && ` • Published: ${new Date(selectedContent.publishedAt).toLocaleString()}`}
+              </div>
+              <Button onClick={() => setSelectedContent(null)} data-testid="button-close-dialog">
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
