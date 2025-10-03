@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Sidebar from "@/components/Sidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,16 +9,45 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import type { Contact, Project } from "@shared/schema";
+import { insertContactSchema, insertProjectSchema, type Contact, type Project, type InsertContact, type InsertProject } from "@shared/schema";
 
 export default function LeadsProjects() {
   const [activeTab, setActiveTab] = useState<'leads' | 'projects'>('leads');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBy, setFilterBy] = useState('all');
+  const [newContactDialogOpen, setNewContactDialogOpen] = useState(false);
+  const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const contactForm = useForm<InsertContact>({
+    resolver: zodResolver(insertContactSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      company: "",
+      leadScore: 0,
+      leadTemperature: "cold",
+      notes: "",
+    },
+  });
+
+  const projectForm = useForm<InsertProject>({
+    resolver: zodResolver(insertProjectSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      projectType: "",
+      status: "planning",
+      priority: "normal",
+    },
+  });
 
   const { data: contacts, isLoading: contactsLoading } = useQuery({
     queryKey: ['/api/contacts'],
@@ -24,6 +55,50 @@ export default function LeadsProjects() {
 
   const { data: projects, isLoading: projectsLoading } = useQuery({
     queryKey: ['/api/projects'],
+  });
+
+  const createContactMutation = useMutation({
+    mutationFn: async (data: InsertContact) => {
+      return apiRequest('POST', '/api/contacts', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/contacts'] });
+      setNewContactDialogOpen(false);
+      contactForm.reset();
+      toast({
+        title: "Contact created",
+        description: "Contact has been created successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create contact.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const createProjectMutation = useMutation({
+    mutationFn: async (data: InsertProject) => {
+      return apiRequest('POST', '/api/projects', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      setNewProjectDialogOpen(false);
+      projectForm.reset();
+      toast({
+        title: "Project created",
+        description: "Project has been created successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create project.",
+        variant: "destructive",
+      });
+    },
   });
 
   const updateContactMutation = useMutation({
@@ -111,12 +186,259 @@ export default function LeadsProjects() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <Button data-testid="button-new-contact">
-                + New Contact
-              </Button>
-              <Button variant="secondary" data-testid="button-new-project">
-                + New Project
-              </Button>
+              <Dialog open={newContactDialogOpen} onOpenChange={setNewContactDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button data-testid="button-new-contact">
+                    + New Contact
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Create New Contact</DialogTitle>
+                  </DialogHeader>
+                  <Form {...contactForm}>
+                    <form onSubmit={contactForm.handleSubmit((data) => createContactMutation.mutate(data))} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={contactForm.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>First Name *</FormLabel>
+                              <FormControl>
+                                <Input {...field} data-testid="input-first-name" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={contactForm.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Last Name *</FormLabel>
+                              <FormControl>
+                                <Input {...field} data-testid="input-last-name" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <FormField
+                        control={contactForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input {...field} value={field.value ?? ""} type="email" data-testid="input-email" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={contactForm.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone</FormLabel>
+                            <FormControl>
+                              <Input {...field} value={field.value ?? ""} data-testid="input-phone" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={contactForm.control}
+                        name="company"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Company</FormLabel>
+                            <FormControl>
+                              <Input {...field} value={field.value ?? ""} data-testid="input-company" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={contactForm.control}
+                          name="leadScore"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Lead Score</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  {...field} 
+                                  type="number"
+                                  value={field.value ?? 0}
+                                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                  data-testid="input-lead-score" 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={contactForm.control}
+                          name="leadTemperature"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Lead Temperature</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value ?? "cold"}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-lead-temperature">
+                                    <SelectValue placeholder="Select temperature" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="hot">Hot</SelectItem>
+                                  <SelectItem value="warm">Warm</SelectItem>
+                                  <SelectItem value="cold">Cold</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <FormField
+                        control={contactForm.control}
+                        name="notes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Notes</FormLabel>
+                            <FormControl>
+                              <Textarea {...field} value={field.value ?? ""} data-testid="input-notes" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="flex justify-end space-x-2 pt-4">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setNewContactDialogOpen(false)}
+                          data-testid="button-cancel"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          disabled={createContactMutation.isPending}
+                          data-testid="button-submit"
+                        >
+                          {createContactMutation.isPending ? "Creating..." : "Create Contact"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+              <Dialog open={newProjectDialogOpen} onOpenChange={setNewProjectDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="secondary" data-testid="button-new-project">
+                    + New Project
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Create New Project</DialogTitle>
+                  </DialogHeader>
+                  <Form {...projectForm}>
+                    <form onSubmit={projectForm.handleSubmit((data) => createProjectMutation.mutate(data))} className="space-y-4">
+                      <FormField
+                        control={projectForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Project Name *</FormLabel>
+                            <FormControl>
+                              <Input {...field} data-testid="input-project-name" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={projectForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea {...field} value={field.value ?? ""} data-testid="input-project-description" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={projectForm.control}
+                          name="projectType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Project Type</FormLabel>
+                              <FormControl>
+                                <Input {...field} value={field.value ?? ""} placeholder="e.g., new_dock, rebuild" data-testid="input-project-type" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={projectForm.control}
+                          name="status"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Status</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value ?? "planning"}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-project-status">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="planning">Planning</SelectItem>
+                                  <SelectItem value="in_progress">In Progress</SelectItem>
+                                  <SelectItem value="completed">Completed</SelectItem>
+                                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2 pt-4">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setNewProjectDialogOpen(false)}
+                          data-testid="button-cancel-project"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          disabled={createProjectMutation.isPending}
+                          data-testid="button-submit-project"
+                        >
+                          {createProjectMutation.isPending ? "Creating..." : "Create Project"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </header>
