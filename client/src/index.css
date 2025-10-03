@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(215, 45%, 8%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(215, 40%, 12%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(215, 40%, 12%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(38, 42%, 65%);
+  --primary-foreground: hsl(215, 45%, 8%);
+  --secondary: hsl(215, 35%, 18%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217, 32%, 25%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(38, 42%, 65%);
+  --accent-foreground: hsl(215, 45%, 8%);
+  --destructive: hsl(0, 62%, 50%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 32%, 25%);
+  --input: hsl(217, 32%, 25%);
+  --ring: hsl(38, 42%, 65%);
+  --chart-1: hsl(38, 42%, 65%);
+  --chart-2: hsl(159, 100%, 36%);
+  --chart-3: hsl(42, 93%, 56%);
+  --chart-4: hsl(147, 79%, 42%);
+  --chart-5: hsl(341, 75%, 51%);
+  --sidebar: hsl(215, 40%, 12%);
+  --sidebar-foreground: hsl(210, 40%, 98%);
+  --sidebar-primary: hsl(38, 42%, 65%);
+  --sidebar-primary-foreground: hsl(215, 45%, 8%);
+  --sidebar-accent: hsl(215, 35%, 18%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(217, 32%, 25%);
+  --sidebar-ring: hsl(38, 42%, 65%);
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: hsl(215, 45%, 8%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(215, 40%, 12%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(215, 40%, 12%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(38, 42%, 65%);
+  --primary-foreground: hsl(215, 45%, 8%);
+  --secondary: hsl(215, 35%, 18%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217, 32%, 25%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(38, 42%, 65%);
+  --accent-foreground: hsl(215, 45%, 8%);
+  --destructive: hsl(0, 62%, 50%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 32%, 25%);
+  --input: hsl(217, 32%, 25%);
+  --ring: hsl(38, 42%, 65%);
+  --chart-1: hsl(38, 42%, 65%);
+  --chart-2: hsl(159, 100%, 36%);
+  --chart-3: hsl(42, 93%, 56%);
+  --chart-4: hsl(147, 79%, 42%);
+  --chart-5: hsl(341, 75%, 51%);
+  --sidebar: hsl(215, 40%, 12%);
+  --sidebar-foreground: hsl(210, 40%, 98%);
+  --sidebar-primary: hsl(38, 42%, 65%);
+  --sidebar-primary-foreground: hsl(215, 45%, 8%);
+  --sidebar-accent: hsl(215, 35%, 18%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(217, 32%, 25%);
+  --sidebar-ring: hsl(38, 42%, 65%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .nav-link:hover {
+    @apply bg-secondary translate-x-1;
+  }
+  
+  .stat-card {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .stat-card:hover {
+    @apply -translate-y-0.5 shadow-lg;
+    box-shadow: 0 8px 24px rgba(212, 165, 116, 0.15);
+  }
+  
+  .kanban-card {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .kanban-card:hover {
+    @apply -translate-y-0.5 shadow-lg;
+    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .badge-hot {
+    @apply bg-red-500/20 text-red-400;
+  }
+  
+  .badge-warm {
+    @apply bg-yellow-500/20 text-yellow-400;
+  }
+  
+  .badge-cold {
+    @apply bg-blue-500/20 text-blue-400;
+  }
+  
+  .progress-bar {
+    @apply h-2 bg-muted rounded-full overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 ease-in-out;
+  }
+  
+  .tab-button {
+    @apply px-6 py-3 bg-transparent border-none text-muted-foreground font-medium cursor-pointer border-b-2 border-transparent transition-all duration-200;
+  }
+  
+  .tab-button.active {
+    @apply text-primary border-primary;
+  }
+  
+  .tab-button:hover {
+    @apply text-foreground;
+  }
+  
+  .agent-card {
+    @apply bg-card border border-border rounded-xl p-6 mb-6;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground rounded;
+    opacity: 0.5;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+
+  .code-block {
+    @apply bg-muted border border-border rounded-lg p-4 font-mono text-sm overflow-x-auto;
+    opacity: 0.9;
+  }
+}
