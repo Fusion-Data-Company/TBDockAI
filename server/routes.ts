@@ -561,6 +561,146 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SMS automation API
+  app.post("/api/sms/send", isAuthenticated, async (req, res) => {
+    try {
+      const { contactId, message, type } = req.body;
+
+      if (!contactId || !message) {
+        return res.status(400).json({ message: "Contact ID and message are required" });
+      }
+
+      const contact = await storage.getContactById(contactId);
+      if (!contact || !contact.phone) {
+        return res.status(400).json({ message: "Contact not found or has no phone number" });
+      }
+
+      const { smsAutomationService } = await import('./services/smsAutomation');
+      const sent = await smsAutomationService.sendSMS(contact.phone, message);
+
+      if (sent) {
+        // Log interaction
+        await storage.createInteraction({
+          contactId,
+          type: 'sms',
+          subject: 'SMS sent',
+          content: message,
+          direction: 'outbound',
+        });
+      }
+
+      res.json({ success: sent });
+    } catch (error) {
+      console.error("Error sending SMS:", error);
+      res.status(500).json({ message: "Failed to send SMS" });
+    }
+  });
+
+  app.post("/api/sms/appointment-reminder", isAuthenticated, async (req, res) => {
+    try {
+      const { contactId, appointmentDate, appointmentType } = req.body;
+
+      const contact = await storage.getContactById(contactId);
+      if (!contact) {
+        return res.status(404).json({ message: "Contact not found" });
+      }
+
+      const { smsAutomationService } = await import('./services/smsAutomation');
+      const sent = await smsAutomationService.sendAppointmentReminder(
+        contact,
+        new Date(appointmentDate),
+        appointmentType
+      );
+
+      res.json({ success: sent });
+    } catch (error) {
+      console.error("Error sending appointment reminder:", error);
+      res.status(500).json({ message: "Failed to send reminder" });
+    }
+  });
+
+  app.post("/api/sms/emergency-alert", isAuthenticated, async (req, res) => {
+    try {
+      const { contactId, salesRepPhone, urgencyNote } = req.body;
+
+      const contact = await storage.getContactById(contactId);
+      if (!contact) {
+        return res.status(404).json({ message: "Contact not found" });
+      }
+
+      const { smsAutomationService } = await import('./services/smsAutomation');
+      const sent = await smsAutomationService.sendEmergencyLeadAlert(
+        salesRepPhone || '+12085551234',
+        contact,
+        urgencyNote || 'Urgent dock repair needed'
+      );
+
+      res.json({ success: sent });
+    } catch (error) {
+      console.error("Error sending emergency alert:", error);
+      res.status(500).json({ message: "Failed to send alert" });
+    }
+  });
+
+  app.post("/api/sms/bulk", isAuthenticated, async (req, res) => {
+    try {
+      const { contactIds, message } = req.body;
+
+      if (!contactIds || !Array.isArray(contactIds) || !message) {
+        return res.status(400).json({ message: "Contact IDs array and message are required" });
+      }
+
+      const contacts = [];
+      for (const id of contactIds) {
+        const contact = await storage.getContactById(id);
+        if (contact) contacts.push(contact);
+      }
+
+      const { smsAutomationService } = await import('./services/smsAutomation');
+      const result = await smsAutomationService.sendBulkSMS(contacts, message);
+
+      res.json({ success: true, ...result });
+    } catch (error) {
+      console.error("Error sending bulk SMS:", error);
+      res.status(500).json({ message: "Failed to send bulk SMS" });
+    }
+  });
+
+  // Twilio webhook for incoming SMS
+  app.post("/api/sms/webhook", async (req, res) => {
+    try {
+      const { From, Body } = req.body;
+
+      const { smsAutomationService } = await import('./services/smsAutomation');
+      const result = smsAutomationService.handleIncomingWebhook(From, Body);
+
+      // Find contact by phone
+      const contacts = await storage.getContacts();
+      const contact = contacts.find(c => c.phone && c.phone.includes(From.replace(/\D/g, '').slice(-10)));
+
+      if (contact) {
+        // Log interaction
+        await storage.createInteraction({
+          contactId: contact.id,
+          type: 'sms',
+          subject: 'SMS received',
+          content: Body,
+          direction: 'inbound',
+        });
+
+        // Send auto-response
+        await smsAutomationService.sendSMS(From, result.response);
+      }
+
+      // Respond to Twilio
+      res.type('text/xml');
+      res.send(`<?xml version="1.0" encoding="UTF-8"?><Response><Message>${result.response}</Message></Response>`);
+    } catch (error) {
+      console.error("Error handling SMS webhook:", error);
+      res.status(500).send('Error processing SMS');
+    }
+  });
+
   // Serve uploaded files
   const express_static = await import('express');
   const { storageService } = await import('./services/storage');
