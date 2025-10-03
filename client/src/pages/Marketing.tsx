@@ -403,32 +403,42 @@ export default function Marketing() {
                     <p className="mt-2 text-muted-foreground">Loading content...</p>
                   </div>
                 ) : aiContent?.length ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-6">
                     {aiContent.map((content: any) => (
                       <Card key={content.id} className="bg-secondary" data-testid={`card-content-${content.id}`}>
-                        <CardHeader className="pb-3">
+                        <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <CardTitle className="text-sm" data-testid={`text-content-title-${content.id}`}>
+                              <CardTitle className="text-lg" data-testid={`text-content-title-${content.id}`}>
                                 {content.title || 'Untitled Content'}
                               </CardTitle>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {content.agentType} Agent • {content.contentType || 'General'}
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {content.agentType} Agent • {content.contentType || 'General'} • {content.model}
                               </p>
                             </div>
                             {getContentStatusBadge(content.status || 'draft')}
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <p className="text-xs text-muted-foreground mb-3">
-                            Model: {content.model || 'Unknown'}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>Created: {new Date(content.createdAt).toLocaleDateString()}</span>
-                            {content.publishedAt && (
-                              <span>Published: {new Date(content.publishedAt).toLocaleDateString()}</span>
-                            )}
-                          </div>
+                          {content.generatedContent ? (
+                            <div className="space-y-4">
+                              <div className="p-4 bg-card border border-border rounded-lg max-h-96 overflow-y-auto">
+                                <div className="prose prose-invert max-w-none text-sm whitespace-pre-wrap text-foreground leading-relaxed">
+                                  {content.generatedContent}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border">
+                                <span>Created: {new Date(content.createdAt).toLocaleDateString()}</span>
+                                {content.publishedAt && (
+                                  <span>Published: {new Date(content.publishedAt).toLocaleDateString()}</span>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="p-8 text-center">
+                              <p className="text-muted-foreground italic">No content generated yet</p>
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     ))}
