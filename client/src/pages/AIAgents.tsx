@@ -406,7 +406,6 @@ You represent a craftsman-owned business that values quality, integrity, and cus
                   </button>
                 </div>
               </div>
-              </Card>
 
               {/* Enhanced Recent Generations */}
               <div className="glass-card p-6">

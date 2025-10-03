@@ -11,6 +11,7 @@ import SalesPipeline from "@/pages/SalesPipeline";
 import AIAgents from "@/pages/AIAgents";
 import Marketing from "@/pages/Marketing";
 import Analytics from "@/pages/Analytics";
+import Documents from "@/pages/Documents";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -28,6 +29,7 @@ function Router() {
           <Route path="/ai-agents" component={AIAgents} />
           <Route path="/marketing" component={Marketing} />
           <Route path="/analytics" component={Analytics} />
+          <Route path="/documents" component={Documents} />
         </>
       )}
       <Route component={NotFound} />

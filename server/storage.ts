@@ -171,6 +171,10 @@ export class DatabaseStorage implements IStorage {
     return contact;
   }
 
+  async getContactById(id: number): Promise<Contact | undefined> {
+    return this.getContact(id);
+  }
+
   async createContact(contact: InsertContact): Promise<Contact> {
     const [newContact] = await db.insert(contacts).values({
       ...contact,
@@ -239,6 +243,10 @@ export class DatabaseStorage implements IStorage {
     return newOpportunity;
   }
 
+  async getOpportunitiesByContact(contactId: number): Promise<Opportunity[]> {
+    return db.select().from(opportunities).where(eq(opportunities.contactId, contactId)).orderBy(desc(opportunities.createdAt));
+  }
+
   async updateOpportunity(id: number, opportunity: Partial<InsertOpportunity>): Promise<Opportunity> {
     const [updatedOpportunity] = await db
       .update(opportunities)
@@ -268,6 +276,19 @@ export class DatabaseStorage implements IStorage {
   async createInteraction(interaction: InsertInteraction): Promise<Interaction> {
     const [newInteraction] = await db.insert(interactions).values(interaction).returning();
     return newInteraction;
+  }
+
+  async getInteractionsByContact(contactId: number): Promise<Interaction[]> {
+    return db.select().from(interactions).where(eq(interactions.contactId, contactId)).orderBy(desc(interactions.createdAt));
+  }
+
+  async updateInteraction(id: number, data: Partial<InsertInteraction>): Promise<Interaction> {
+    const [interaction] = await db
+      .update(interactions)
+      .set(data)
+      .where(eq(interactions.id, id))
+      .returning();
+    return interaction;
   }
 
   // Document operations
@@ -376,6 +397,52 @@ export class DatabaseStorage implements IStorage {
       conversionRate: 34.8,
       monthlyGrowth: 23,
     };
+  }
+
+  // Document methods
+  async createDocument(documentData: InsertDocument): Promise<Document> {
+    const [document] = await db
+      .insert(documents)
+      .values(documentData)
+      .returning();
+    return document;
+  }
+
+  async getDocuments(projectId?: number, opportunityId?: number, type?: string): Promise<Document[]> {
+    let query = db.select().from(documents).where(eq(documents.isActive, true));
+
+    const conditions: any[] = [eq(documents.isActive, true)];
+
+    if (projectId) {
+      conditions.push(eq(documents.projectId, projectId));
+    }
+    if (opportunityId) {
+      conditions.push(eq(documents.opportunityId, opportunityId));
+    }
+    if (type) {
+      conditions.push(eq(documents.type, type));
+    }
+
+    return await db
+      .select()
+      .from(documents)
+      .where(and(...conditions))
+      .orderBy(desc(documents.createdAt));
+  }
+
+  async getDocumentById(id: number): Promise<Document | undefined> {
+    const [document] = await db
+      .select()
+      .from(documents)
+      .where(eq(documents.id, id));
+    return document;
+  }
+
+  async deleteDocument(id: number): Promise<void> {
+    await db
+      .update(documents)
+      .set({ isActive: false })
+      .where(eq(documents.id, id));
   }
 }
 

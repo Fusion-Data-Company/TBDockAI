@@ -337,6 +337,235 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Document upload API
+  app.post("/api/documents/upload", isAuthenticated, async (req: any, res) => {
+    try {
+      // File upload using multipart/form-data will be handled by multer middleware
+      // For now, we'll accept base64 encoded files in JSON
+      const { fileName, fileData, mimeType, projectId, opportunityId, documentType } = req.body;
+
+      if (!fileName || !fileData) {
+        return res.status(400).json({ message: "File name and data are required" });
+      }
+
+      // Decode base64
+      const buffer = Buffer.from(fileData, 'base64');
+
+      // Upload to storage
+      const { storageService } = await import('./services/storage');
+      const uploadedFile = await storageService.uploadFile(buffer, fileName, mimeType || 'application/octet-stream');
+
+      // Create document record
+      const document = await storage.createDocument({
+        projectId: projectId || null,
+        opportunityId: opportunityId || null,
+        name: fileName,
+        type: documentType || 'general',
+        filePath: uploadedFile.url,
+        fileSize: uploadedFile.size,
+        mimeType: uploadedFile.mimeType,
+        version: 1,
+        isActive: true,
+        uploadedBy: req.user.claims.sub,
+      });
+
+      res.json({
+        success: true,
+        document,
+        file: {
+          url: uploadedFile.url,
+          filename: uploadedFile.filename,
+          size: uploadedFile.size
+        }
+      });
+    } catch (error) {
+      console.error("Error uploading document:", error);
+      res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  app.get("/api/documents", isAuthenticated, async (req, res) => {
+    try {
+      const { projectId, opportunityId, type } = req.query;
+      const documents = await storage.getDocuments(
+        projectId ? parseInt(projectId as string) : undefined,
+        opportunityId ? parseInt(opportunityId as string) : undefined,
+        type as string
+      );
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  app.delete("/api/documents/:id", isAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const document = await storage.getDocumentById(id);
+
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Delete from storage
+      const { storageService } = await import('./services/storage');
+      const filename = document.filePath?.split('/').pop();
+      if (filename) {
+        await storageService.deleteFile(filename);
+      }
+
+      // Delete from database
+      await storage.deleteDocument(id);
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      res.status(500).json({ message: "Failed to delete document" });
+    }
+  });
+
+  // Lead scoring and automation API
+  app.post("/api/leads/score/:id", isAuthenticated, async (req, res) => {
+    try {
+      const contactId = parseInt(req.params.id);
+      const contact = await storage.getContactById(contactId);
+
+      if (!contact) {
+        return res.status(404).json({ message: "Contact not found" });
+      }
+
+      const interactions = await storage.getInteractionsByContact(contactId);
+      const opportunities = await storage.getOpportunitiesByContact(contactId);
+
+      const { leadScoringService } = await import('./services/leadScoring');
+      const scoringResult = leadScoringService.calculateLeadScore(contact, interactions, opportunities);
+
+      // Update contact with new score and temperature
+      await storage.updateContact(contactId, {
+        leadScore: scoringResult.score,
+        leadTemperature: scoringResult.temperature,
+      });
+
+      res.json(scoringResult);
+    } catch (error) {
+      console.error("Error scoring lead:", error);
+      res.status(500).json({ message: "Failed to score lead" });
+    }
+  });
+
+  app.post("/api/leads/score-all", isAuthenticated, async (req, res) => {
+    try {
+      const contacts = await storage.getContacts();
+      const results = [];
+
+      const { leadScoringService } = await import('./services/leadScoring');
+
+      for (const contact of contacts) {
+        const interactions = await storage.getInteractionsByContact(contact.id);
+        const opportunities = await storage.getOpportunitiesByContact(contact.id);
+        const scoringResult = leadScoringService.calculateLeadScore(contact, interactions, opportunities);
+
+        await storage.updateContact(contact.id, {
+          leadScore: scoringResult.score,
+          leadTemperature: scoringResult.temperature,
+        });
+
+        results.push({
+          contactId: contact.id,
+          name: `${contact.firstName} ${contact.lastName}`,
+          score: scoringResult.score,
+          temperature: scoringResult.temperature,
+        });
+      }
+
+      res.json({ success: true, scoredCount: results.length, results });
+    } catch (error) {
+      console.error("Error scoring all leads:", error);
+      res.status(500).json({ message: "Failed to score leads" });
+    }
+  });
+
+  app.get("/api/leads/duplicates/:id", isAuthenticated, async (req, res) => {
+    try {
+      const contactId = parseInt(req.params.id);
+      const contact = await storage.getContactById(contactId);
+
+      if (!contact) {
+        return res.status(404).json({ message: "Contact not found" });
+      }
+
+      const allContacts = await storage.getContacts();
+      const { leadScoringService } = await import('./services/leadScoring');
+      const duplicates = leadScoringService.detectDuplicates(contact, allContacts);
+
+      res.json({ duplicates, count: duplicates.length });
+    } catch (error) {
+      console.error("Error detecting duplicates:", error);
+      res.status(500).json({ message: "Failed to detect duplicates" });
+    }
+  });
+
+  app.post("/api/leads/merge", isAuthenticated, async (req, res) => {
+    try {
+      const { primaryId, duplicateId } = req.body;
+
+      if (!primaryId || !duplicateId) {
+        return res.status(400).json({ message: "Primary and duplicate contact IDs are required" });
+      }
+
+      const primary = await storage.getContactById(primaryId);
+      const duplicate = await storage.getContactById(duplicateId);
+
+      if (!primary || !duplicate) {
+        return res.status(404).json({ message: "Contact not found" });
+      }
+
+      // Merge data - keep primary but fill in missing fields from duplicate
+      const mergedData: any = {
+        email: primary.email || duplicate.email,
+        phone: primary.phone || duplicate.phone,
+        company: primary.company || duplicate.company,
+        address: primary.address || duplicate.address,
+        city: primary.city || duplicate.city,
+        state: primary.state || duplicate.state,
+        zipCode: primary.zipCode || duplicate.zipCode,
+        notes: [primary.notes, duplicate.notes].filter(Boolean).join('\n\n---MERGED---\n\n'),
+        leadScore: Math.max(primary.leadScore || 0, duplicate.leadScore || 0),
+      };
+
+      // Update primary contact
+      await storage.updateContact(primaryId, mergedData);
+
+      // Transfer opportunities and interactions from duplicate to primary
+      const duplicateOpportunities = await storage.getOpportunitiesByContact(duplicateId);
+      for (const opp of duplicateOpportunities) {
+        await storage.updateOpportunity(opp.id, { contactId: primaryId });
+      }
+
+      const duplicateInteractions = await storage.getInteractionsByContact(duplicateId);
+      for (const interaction of duplicateInteractions) {
+        await storage.updateInteraction(interaction.id, { contactId: primaryId });
+      }
+
+      // Mark duplicate as merged (soft delete by adding note)
+      await storage.updateContact(duplicateId, {
+        notes: `MERGED INTO CONTACT #${primaryId} - ${duplicate.notes || ''}`,
+        leadScore: 0,
+      });
+
+      res.json({ success: true, mergedInto: primaryId });
+    } catch (error) {
+      console.error("Error merging contacts:", error);
+      res.status(500).json({ message: "Failed to merge contacts" });
+    }
+  });
+
+  // Serve uploaded files
+  const express_static = await import('express');
+  const { storageService } = await import('./services/storage');
+  app.use('/uploads', express_static.default.static(storageService.getUploadDir()));
+
   const httpServer = createServer(app);
   return httpServer;
 }
