@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function AIAgents() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'generate'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'generate'>('generate');
   const [prompt, setPrompt] = useState('');
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [contentType, setContentType] = useState<string>('');
