@@ -174,9 +174,9 @@ export const aiContentGenerations = pgTable("ai_content_generations", {
   contentType: varchar("content_type", { length: 50 }), // article, post, email, etc.
   prompt: text("prompt"),
   generatedContent: text("generated_content"),
-  model: varchar("model", { length: 100 }),
+  model: varchar("model", { length: 200 }),
   status: varchar("status", { length: 20 }).default('draft'), // draft, reviewed, published
-  title: varchar("title", { length: 255 }),
+  title: text("title"),
   metadata: jsonb("metadata"), // Additional data like hashtags, scheduling info, etc.
   publishedAt: timestamp("published_at"),
   createdAt: timestamp("created_at").defaultNow(),
