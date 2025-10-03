@@ -156,7 +156,7 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
   return (
     <div className="space-y-6">
       {/* Pipeline Progress Bar */}
-      <div className="relative h-3 bg-secondary/30 rounded-full overflow-hidden">
+      <div className="relative h-4 bg-secondary/20 rounded-full overflow-hidden border border-border/30">
         <div className="absolute inset-0 flex">
           {STAGES.map((stage, idx) => {
             const stageOpps = getOpportunitiesByStage(stage.id);
@@ -167,16 +167,43 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
             return (
               <div
                 key={stage.id}
-                className={`${stage.color} transition-all duration-300`}
+                className={`${stage.color} transition-all duration-500 relative group`}
                 style={{ width: `${percentage}%` }}
-              />
+              >
+                {percentage > 5 && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white/90 drop-shadow-lg">
+                      {stageOpps.length}
+                    </span>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
       </div>
 
-      {/* Kanban Columns */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      {/* Pipeline Stats Summary */}
+      <div className="grid grid-cols-5 gap-3">
+        {STAGES.map((stage) => {
+          const stageOpps = getOpportunitiesByStage(stage.id);
+          const stageValue = getStageValue(stage.id);
+          return (
+            <div key={stage.id} className={`${stage.lightColor} ${stage.borderColor} border rounded-lg p-3`}>
+              <div className="flex items-center space-x-2 mb-1">
+                <span className="text-lg">{stage.icon}</span>
+                <span className={`text-xs font-bold ${stage.textColor}`}>{stage.label}</span>
+              </div>
+              <div className={`text-xl font-bold ${stage.textColor}`}>{formatCurrency(stageValue)}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">{stageOpps.length} deals</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Kanban Columns - Fixed Width Container */}
+      <div className="relative -mx-8 px-8">
+        <div className="flex gap-5 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
         {STAGES.map((stage) => {
           const stageOpps = getOpportunitiesByStage(stage.id);
           const stageValue = getStageValue(stage.id);
@@ -185,32 +212,41 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
           return (
             <div
               key={stage.id}
-              className="flex-shrink-0 w-80"
+              className="flex-shrink-0 w-[340px] snap-start"
               onDragOver={(e) => handleDragOver(e, stage.id)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, stage.id)}
             >
               {/* Column Header */}
-              <div className={`glass-card p-4 mb-3 ${isDragOver ? `${stage.lightColor} ${stage.borderColor} border-2` : ''} transition-all duration-200`}>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl">{stage.icon}</span>
-                    <h3 className="font-bold text-foreground text-lg">{stage.label}</h3>
+              <div className={`relative overflow-hidden rounded-2xl p-5 mb-4 border-2 transition-all duration-300 ${
+                isDragOver
+                  ? `${stage.lightColor} ${stage.borderColor} scale-[1.02] shadow-xl`
+                  : 'bg-secondary/40 border-border/30 backdrop-blur-sm'
+              }`}>
+                <div className="absolute top-0 right-0 w-32 h-32 ${stage.color} opacity-5 rounded-full blur-3xl"></div>
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-10 h-10 ${stage.lightColor} rounded-xl flex items-center justify-center`}>
+                        <span className="text-2xl">{stage.icon}</span>
+                      </div>
+                      <h3 className="font-bold text-foreground text-base">{stage.label}</h3>
+                    </div>
+                    <div className={`px-3 py-1.5 ${stage.lightColor} ${stage.borderColor} border rounded-full`}>
+                      <span className={`text-sm font-bold ${stage.textColor}`}>{stageOpps.length}</span>
+                    </div>
                   </div>
-                  <Badge variant="secondary" className={`${stage.lightColor} ${stage.textColor} border-0`}>
-                    {stageOpps.length}
-                  </Badge>
-                </div>
-                <div className="flex items-baseline space-x-2">
-                  <span className={`text-2xl font-bold ${stage.textColor}`}>
+                  <div className={`text-2xl font-bold ${stage.textColor} mb-1`}>
                     {formatCurrency(stageValue)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">total value</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground font-medium">Pipeline Value</div>
                 </div>
               </div>
 
               {/* Cards Container */}
-              <div className={`space-y-3 min-h-[400px] p-2 rounded-xl ${isDragOver ? `${stage.lightColor}` : ''} transition-colors duration-200`}>
+              <div className={`space-y-3 min-h-[500px] p-3 rounded-2xl transition-all duration-300 ${
+                isDragOver ? `${stage.lightColor} border-2 ${stage.borderColor}` : 'bg-transparent'
+              }`}>
                 {stageOpps.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <div className={`w-16 h-16 ${stage.lightColor} rounded-full flex items-center justify-center mb-3`}>
@@ -227,33 +263,40 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
                       key={opportunity.id}
                       draggable
                       onDragStart={(e) => handleDragStart(e, opportunity)}
-                      className={`group glass-card p-4 cursor-grab active:cursor-grabbing hover:scale-[1.02] transition-all duration-200 border ${stage.borderColor} hover:shadow-lg ${
-                        draggedCard?.id === opportunity.id ? 'opacity-50 scale-95' : ''
+                      className={`group relative overflow-hidden rounded-xl p-5 cursor-grab active:cursor-grabbing transition-all duration-300 border-2 bg-card/60 backdrop-blur-sm ${
+                        draggedCard?.id === opportunity.id
+                          ? 'opacity-40 scale-95 rotate-2'
+                          : `${stage.borderColor} hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1`
                       }`}
                     >
-                      {/* Card Header */}
-                      <div className="flex items-start justify-between mb-3">
-                        <h4 className="font-semibold text-foreground pr-2 line-clamp-2 group-hover:text-primary transition-colors">
-                          {opportunity.name}
-                        </h4>
-                        <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-secondary/50 rounded">
-                          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-                          </svg>
-                        </button>
-                      </div>
+                      {/* Gradient Accent */}
+                      <div className={`absolute top-0 right-0 w-24 h-24 ${stage.color} opacity-5 rounded-full blur-2xl`}></div>
 
-                      {/* Card Value */}
-                      <div className="mb-3">
-                        <div className={`inline-flex items-center px-3 py-1.5 ${stage.lightColor} ${stage.borderColor} border rounded-lg`}>
-                          <svg className={`w-4 h-4 ${stage.textColor} mr-2`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                          </svg>
-                          <span className={`font-bold ${stage.textColor} text-lg`}>
-                            {formatCurrency(opportunity.value)}
-                          </span>
+                      <div className="relative">
+                        {/* Card Header */}
+                        <div className="flex items-start justify-between mb-4">
+                          <h4 className="font-bold text-foreground pr-2 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                            {opportunity.name}
+                          </h4>
+                          <button className="opacity-0 group-hover:opacity-100 transition-all p-1.5 hover:bg-primary/10 rounded-lg">
+                            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                            </svg>
+                          </button>
                         </div>
-                      </div>
+
+                        {/* Card Value - Prominent */}
+                        <div className="mb-4">
+                          <div className={`relative inline-flex items-center px-4 py-2.5 ${stage.lightColor} ${stage.borderColor} border-2 rounded-xl shadow-sm`}>
+                            <div className={`absolute inset-0 ${stage.color} opacity-5 rounded-xl`}></div>
+                            <svg className={`relative w-5 h-5 ${stage.textColor} mr-2.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span className={`relative font-black ${stage.textColor} text-xl tracking-tight`}>
+                              {formatCurrency(opportunity.value)}
+                            </span>
+                          </div>
+                        </div>
 
                       {/* Contact Info */}
                       {opportunity.contact && (
@@ -301,33 +344,51 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
                       </div>
 
                       {/* Hover Actions */}
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-3 flex items-center space-x-2">
-                        <Button variant="ghost" size="sm" className="flex-1 h-8 text-xs">
-                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 mt-4 pt-4 border-t border-border/20 flex items-center space-x-2">
+                        <button className="flex-1 glass-button h-9 text-xs font-semibold">
+                          <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                           </svg>
                           View
-                        </Button>
-                        <Button variant="ghost" size="sm" className="flex-1 h-8 text-xs">
-                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        </button>
+                        <button className={`flex-1 h-9 px-3 ${stage.lightColor} ${stage.textColor} border ${stage.borderColor} rounded-lg text-xs font-semibold hover:scale-105 transition-transform`}>
+                          <svg className="w-3.5 h-3.5 mr-1.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                           </svg>
                           Edit
-                        </Button>
+                        </button>
                       </div>
                     </div>
+                  </div>
                   ))
                 )}
               </div>
             </div>
           );
         })}
+        </div>
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center justify-center space-x-6 pt-4 border-t border-border/30">
-        <span className="text-sm text-muted-foreground">💡 Tip: Drag cards between columns to update stage</span>
+      {/* Enhanced Legend */}
+      <div className="flex items-center justify-between px-4 py-4 bg-secondary/20 rounded-xl border border-border/30">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <span className="text-sm font-medium text-muted-foreground">
+            💡 Drag and drop cards between stages to move opportunities through your pipeline
+          </span>
+        </div>
+        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+          <span className="px-2 py-1 bg-primary/10 text-primary rounded font-mono">Click</span>
+          <span>+</span>
+          <span className="px-2 py-1 bg-primary/10 text-primary rounded font-mono">Drag</span>
+          <span>=</span>
+          <span>Update Stage</span>
+        </div>
       </div>
     </div>
   );
