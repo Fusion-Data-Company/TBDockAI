@@ -233,7 +233,7 @@ export default function LeadsProjects() {
                           <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value ?? ""} type="email" data-testid="input-email" />
+                              <Input {...field} type="email" data-testid="input-email" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -246,7 +246,7 @@ export default function LeadsProjects() {
                           <FormItem>
                             <FormLabel>Phone</FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value ?? ""} data-testid="input-phone" />
+                              <Input {...field} data-testid="input-phone" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -259,7 +259,7 @@ export default function LeadsProjects() {
                           <FormItem>
                             <FormLabel>Company</FormLabel>
                             <FormControl>
-                              <Input {...field} value={field.value ?? ""} data-testid="input-company" />
+                              <Input {...field} data-testid="input-company" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -274,10 +274,12 @@ export default function LeadsProjects() {
                               <FormLabel>Lead Score</FormLabel>
                               <FormControl>
                                 <Input 
-                                  {...field} 
                                   type="number"
-                                  value={field.value ?? 0}
-                                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                  value={field.value || ""} 
+                                  onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                                  onBlur={field.onBlur}
+                                  name={field.name}
+                                  ref={field.ref}
                                   data-testid="input-lead-score" 
                                 />
                               </FormControl>
@@ -291,7 +293,7 @@ export default function LeadsProjects() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Lead Temperature</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value ?? "cold"}>
+                              <Select onValueChange={field.onChange} value={field.value || "cold"}>
                                 <FormControl>
                                   <SelectTrigger data-testid="select-lead-temperature">
                                     <SelectValue placeholder="Select temperature" />
@@ -315,7 +317,7 @@ export default function LeadsProjects() {
                           <FormItem>
                             <FormLabel>Notes</FormLabel>
                             <FormControl>
-                              <Textarea {...field} value={field.value ?? ""} data-testid="input-notes" />
+                              <Textarea {...field} data-testid="input-notes" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -374,7 +376,7 @@ export default function LeadsProjects() {
                           <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                              <Textarea {...field} value={field.value ?? ""} data-testid="input-project-description" />
+                              <Textarea {...field} data-testid="input-project-description" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -388,7 +390,7 @@ export default function LeadsProjects() {
                             <FormItem>
                               <FormLabel>Project Type</FormLabel>
                               <FormControl>
-                                <Input {...field} value={field.value ?? ""} placeholder="e.g., new_dock, rebuild" data-testid="input-project-type" />
+                                <Input {...field} placeholder="e.g., new_dock, rebuild" data-testid="input-project-type" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -400,7 +402,7 @@ export default function LeadsProjects() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Status</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value ?? "planning"}>
+                              <Select onValueChange={field.onChange} value={field.value || "planning"}>
                                 <FormControl>
                                   <SelectTrigger data-testid="select-project-status">
                                     <SelectValue />
