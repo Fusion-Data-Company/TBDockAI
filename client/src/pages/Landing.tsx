@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import logoImage from "@assets/business logo_edited_1759533993964.avif";
 
 export default function Landing() {
   return (
@@ -8,11 +9,11 @@ export default function Landing() {
         <CardContent className="pt-6">
           <div className="text-center space-y-6">
             <div className="flex items-center justify-center space-x-3 mb-8">
-              <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center">
-                <svg className="w-10 h-10 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-              </div>
+              <img 
+                src={logoImage} 
+                alt="TBDock Logo" 
+                className="w-20 h-20 object-contain"
+              />
               <div>
                 <h1 className="text-4xl font-bold text-foreground">TBDock AI</h1>
                 <p className="text-lg text-muted-foreground">Automation Platform</p>

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import logoImage from "@assets/business logo_edited_1759533993964.avif";
 
 export default function AIAgents() {
   const [activeTab, setActiveTab] = useState<'overview' | 'generate'>('generate');
@@ -235,9 +236,18 @@ You represent a craftsman-owned business that values quality, integrity, and cus
     <div className="flex min-h-screen">
       <Sidebar />
       
-      <main className="flex-1 ml-64">
+      <main className="flex-1 ml-64 relative">
+        {/* Logo Watermark Background */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 ml-64">
+          <img 
+            src={logoImage} 
+            alt="" 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] max-w-2xl opacity-[0.02] select-none"
+          />
+        </div>
+
         {/* Enhanced Header */}
-        <header className="sticky top-0 z-50 backdrop-blur-glass border-b border-border/50">
+        <header className="sticky top-0 z-50 backdrop-blur-glass border-b border-border/50 relative">
           <div className="flex items-center justify-between px-8 py-4">
             <div className="animate-fade-in-scale">
               <h2 className="section-title text-foreground" data-testid="text-page-title">
@@ -252,12 +262,17 @@ You represent a craftsman-owned business that values quality, integrity, and cus
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm text-green-400 font-medium">API Connected</span>
               </div>
+              <img 
+                src={logoImage} 
+                alt="TBDock" 
+                className="h-12 w-auto object-contain ml-4"
+              />
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <div className="p-8 space-y-8">
+        <div className="p-8 space-y-8 relative z-10">
           {/* Enhanced API Configuration */}
           <div className="glass-card p-6 animate-fade-in-scale">
             <div className="flex items-start space-x-4">

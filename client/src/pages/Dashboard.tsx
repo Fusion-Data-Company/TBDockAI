@@ -5,6 +5,7 @@ import KanbanBoard from "@/components/KanbanBoard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import logoImage from "@assets/business logo_edited_1759533993964.avif";
 
 export default function Dashboard() {
   const { data: dashboardStats, isLoading: statsLoading } = useQuery({
@@ -65,9 +66,18 @@ export default function Dashboard() {
     <div className="flex min-h-screen">
       <Sidebar />
       
-      <main className="flex-1 ml-64">
+      <main className="flex-1 ml-64 relative">
+        {/* Logo Watermark Background */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 ml-64">
+          <img 
+            src={logoImage} 
+            alt="" 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] max-w-2xl opacity-[0.02] select-none"
+          />
+        </div>
+
         {/* Enhanced Header */}
-        <header className="sticky top-0 z-50 backdrop-blur-glass border-b border-border/50">
+        <header className="sticky top-0 z-50 backdrop-blur-glass border-b border-border/50 relative">
           <div className="flex items-center justify-between px-8 py-4">
             <div className="animate-fade-in-scale">
               <h2 className="section-title text-foreground" data-testid="text-page-title">
@@ -92,12 +102,17 @@ export default function Dashboard() {
                 </svg>
                 New Lead
               </button>
+              <img 
+                src={logoImage} 
+                alt="TBDock" 
+                className="h-12 w-auto object-contain ml-4"
+              />
             </div>
           </div>
         </header>
 
         {/* Dashboard Content */}
-        <div className="p-8 space-y-8">
+        <div className="p-8 space-y-8 relative z-10">
           {/* Enhanced KPI Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard

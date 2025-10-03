@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import logoImage from "@assets/business logo_edited_1759533993964.avif";
 
 interface NavItem {
   path: string;
@@ -87,14 +88,14 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 backdrop-blur-glass border-r border-border/50 flex flex-col fixed h-screen">
-      {/* Enhanced Logo */}
+      {/* TBDock Logo */}
       <div className="p-6 border-b border-border/50">
         <div className="flex items-center space-x-3 animate-fade-in-scale">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
-            <svg className="w-7 h-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-          </div>
+          <img 
+            src={logoImage} 
+            alt="TBDock Logo" 
+            className="w-12 h-12 object-contain rounded-lg"
+          />
           <div>
             <h1 className="text-xl font-bold text-foreground font-display">TBDock AI</h1>
             <p className="text-xs text-muted-foreground">Automation Platform</p>
