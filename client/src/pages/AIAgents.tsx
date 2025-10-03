@@ -273,6 +273,102 @@ You represent a craftsman-owned business that values quality, integrity, and cus
 
         {/* Content */}
         <div className="p-8 space-y-8 relative z-10">
+          {/* Featured: Voice Agent Showcase */}
+          <div className="glass-card p-8 animate-fade-in-scale border-2 border-primary/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="relative">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary via-primary to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
+                    <svg className="w-8 h-8 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h3 className="text-2xl font-bold gradient-text">⭐ Voice Assistant</h3>
+                      <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full">
+                        PREMIUM FEATURE
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground font-medium">
+                      ElevenLabs-powered Sandler methodology lead qualification & appointment scheduling
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full">
+                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50"></div>
+                  <span className="text-sm text-green-400 font-bold">LIVE & ACTIVE</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-primary/10 rounded-xl p-4 border border-primary/20">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span className="text-sm font-bold text-primary">Sandler Sales Method</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Professional lead qualification with proven sales methodology</p>
+                </div>
+                <div className="bg-blue-500/10 rounded-xl p-4 border border-blue-500/20">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span className="text-sm font-bold text-blue-400">Smart Scheduling</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Automated appointment booking with calendar integration</p>
+                </div>
+                <div className="bg-green-500/10 rounded-xl p-4 border border-green-500/20">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span className="text-sm font-bold text-green-400">24/7 Availability</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Never miss a lead - answers calls around the clock</p>
+                </div>
+              </div>
+
+              <div className="bg-secondary/30 rounded-xl p-5 border border-border/30">
+                <h4 className="text-sm font-bold text-foreground mb-3 flex items-center">
+                  <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Voice Agent Capabilities
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-start space-x-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>Natural, conversational human-like voice</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>Pain point discovery & qualification</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>Budget & timeline assessment</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>Automated CRM data capture</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>Emergency vs routine call routing</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="text-primary mt-0.5">✓</span>
+                    <span>Professional follow-up scheduling</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Enhanced API Configuration */}
           <div className="glass-card p-6 animate-fade-in-scale">
             <div className="flex items-start space-x-4">
