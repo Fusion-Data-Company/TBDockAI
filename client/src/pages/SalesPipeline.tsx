@@ -2,9 +2,24 @@ import Sidebar from "@/components/Sidebar";
 import KanbanBoard from "@/components/KanbanBoard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertOpportunitySchema } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import type { z } from "zod";
 
 export default function SalesPipeline() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+  
   const { data: opportunities, isLoading } = useQuery({
     queryKey: ['/api/opportunities'],
   });
@@ -12,6 +27,46 @@ export default function SalesPipeline() {
   const { data: pipelineAnalytics } = useQuery({
     queryKey: ['/api/analytics/pipeline'],
   });
+  
+  const { data: contacts } = useQuery({
+    queryKey: ['/api/contacts'],
+  });
+  
+  const opportunityForm = useForm<z.infer<typeof insertOpportunitySchema>>({
+    resolver: zodResolver(insertOpportunitySchema),
+    defaultValues: {
+      name: "",
+      value: "0",
+      stage: "new_lead",
+      contactId: null,
+    },
+  });
+  
+  const createOpportunityMutation = useMutation({
+    mutationFn: (data: z.infer<typeof insertOpportunitySchema>) => 
+      apiRequest('POST', '/api/opportunities', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/opportunities'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics/pipeline'] });
+      setIsDialogOpen(false);
+      opportunityForm.reset();
+      toast({
+        title: "Success",
+        description: "Opportunity created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create opportunity",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handleCreateOpportunity = (data: z.infer<typeof insertOpportunitySchema>) => {
+    createOpportunityMutation.mutate(data);
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', { 
@@ -45,9 +100,135 @@ export default function SalesPipeline() {
                 </svg>
                 Filter
               </Button>
-              <Button data-testid="button-new-opportunity">
-                + New Opportunity
-              </Button>
+              
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button data-testid="button-new-opportunity">
+                    + New Opportunity
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Create New Opportunity</DialogTitle>
+                  </DialogHeader>
+                  
+                  <Form {...opportunityForm}>
+                    <form onSubmit={opportunityForm.handleSubmit(handleCreateOpportunity)} className="space-y-4">
+                      <FormField
+                        control={opportunityForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Title *</FormLabel>
+                            <FormControl>
+                              <Input {...field} placeholder="e.g., Private Dock Installation" data-testid="input-title" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={opportunityForm.control}
+                          name="value"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Value ($) *</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  type="number" 
+                                  value={field.value || ""}
+                                  onChange={(e) => field.onChange(e.target.value)}
+                                  onBlur={field.onBlur}
+                                  name={field.name}
+                                  ref={field.ref}
+                                  placeholder="45000" 
+                                  data-testid="input-value" 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={opportunityForm.control}
+                          name="stage"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Stage</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value || "new_lead"}>
+                                <FormControl>
+                                  <SelectTrigger data-testid="select-stage">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="new_lead">New Lead</SelectItem>
+                                  <SelectItem value="qualification">Qualification</SelectItem>
+                                  <SelectItem value="proposal">Proposal Sent</SelectItem>
+                                  <SelectItem value="negotiation">Negotiation</SelectItem>
+                                  <SelectItem value="closed_won">Closed Won</SelectItem>
+                                  <SelectItem value="closed_lost">Closed Lost</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <FormField
+                        control={opportunityForm.control}
+                        name="contactId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Contact</FormLabel>
+                            <Select 
+                              onValueChange={(value) => field.onChange(value ? parseInt(value) : null)}
+                              value={field.value ? String(field.value) : undefined}
+                            >
+                              <FormControl>
+                                <SelectTrigger data-testid="select-contact">
+                                  <SelectValue placeholder="Select a contact (optional)" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {contacts?.map((contact: any) => (
+                                  <SelectItem key={contact.id} value={String(contact.id)}>
+                                    {contact.firstName} {contact.lastName}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      
+                      <div className="flex justify-end space-x-2 pt-4">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setIsDialogOpen(false)}
+                          data-testid="button-cancel"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          disabled={createOpportunityMutation.isPending}
+                          data-testid="button-submit"
+                        >
+                          {createOpportunityMutation.isPending ? "Creating..." : "Create Opportunity"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </header>
