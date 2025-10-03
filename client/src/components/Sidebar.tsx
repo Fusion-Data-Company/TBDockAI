@@ -68,65 +68,72 @@ export default function Sidebar() {
   const [location, navigate] = useLocation();
 
   return (
-    <aside className="w-64 bg-card border-r border-border flex flex-col fixed h-screen">
-      {/* Logo */}
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <aside className="w-64 backdrop-blur-glass border-r border-border/50 flex flex-col fixed h-screen">
+      {/* Enhanced Logo */}
+      <div className="p-6 border-b border-border/50">
+        <div className="flex items-center space-x-3 animate-fade-in-scale">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
+            <svg className="w-7 h-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-foreground">TBDock AI</h1>
+            <h1 className="text-xl font-bold text-foreground font-display">TBDock AI</h1>
             <p className="text-xs text-muted-foreground">Automation Platform</p>
           </div>
         </div>
       </div>
 
-      {/* Navigation Links */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin">
-        {navItems.map((item) => {
+      {/* Enhanced Navigation Links */}
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto scrollbar-thin">
+        {navItems.map((item, index) => {
           const isActive = location === item.path;
           
           return (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={`nav-link flex items-center space-x-3 px-4 py-3 rounded-lg w-full text-left transition-all duration-200 ${
+              className={`nav-link flex items-center space-x-3 px-4 py-3 rounded-xl w-full text-left transition-all duration-300 ${
                 isActive
-                  ? 'bg-secondary text-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary hover:translate-x-1'
+                  ? 'bg-primary/20 text-primary border border-primary/30 shadow-lg'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50 hover:translate-x-1'
               }`}
               data-testid={`nav-${item.path === '/' ? 'dashboard' : item.path.substring(1)}`}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
-              {item.icon}
+              <div className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
+                {item.icon}
+              </div>
               <span className="font-medium">{item.label}</span>
+              {isActive && (
+                <div className="ml-auto w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              )}
             </button>
           );
         })}
       </nav>
 
-      {/* User Profile */}
-      <div className="p-4 border-t border-border">
-        <div className="flex items-center space-x-3 px-4 py-3">
-          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold">
-            TH
+      {/* Enhanced User Profile */}
+      <div className="p-4 border-t border-border/50">
+        <div className="glass-card p-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center text-primary-foreground font-bold shadow-lg">
+              TH
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-foreground">Tyler Hinton</p>
+              <p className="text-xs text-muted-foreground">Owner</p>
+            </div>
+            <button
+              className="p-2 rounded-lg hover:bg-secondary/50 transition-colors"
+              onClick={() => window.location.href = '/api/logout'}
+              data-testid="button-logout"
+            >
+              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+            </button>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Tyler Hinton</p>
-            <p className="text-xs text-muted-foreground">Owner</p>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.location.href = '/api/logout'}
-            data-testid="button-logout"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-            </svg>
-          </Button>
         </div>
       </div>
     </aside>

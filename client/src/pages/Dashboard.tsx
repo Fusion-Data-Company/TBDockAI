@@ -66,34 +66,39 @@ export default function Dashboard() {
       <Sidebar />
       
       <main className="flex-1 ml-64">
-        {/* Header */}
-        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
+        {/* Enhanced Header */}
+        <header className="sticky top-0 z-50 backdrop-blur-glass border-b border-border/50">
           <div className="flex items-center justify-between px-8 py-4">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground" data-testid="text-page-title">
+            <div className="animate-fade-in-scale">
+              <h2 className="section-title text-foreground" data-testid="text-page-title">
                 Automation Dashboard
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1">
                 Welcome back, Tyler. Here's what's happening with your projects.
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="secondary" data-testid="button-notifications">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              <div className="relative">
+                <button className="glass-button p-3" data-testid="button-notifications">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                  </svg>
+                </button>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+              </div>
+              <button className="premium-button" data-testid="button-new-lead">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
-                Notifications
-              </Button>
-              <Button data-testid="button-new-lead">
-                + New Lead
-              </Button>
+                New Lead
+              </button>
             </div>
           </div>
         </header>
 
         {/* Dashboard Content */}
         <div className="p-8 space-y-8">
-          {/* KPI Stats */}
+          {/* Enhanced KPI Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
               title="Total Leads"
@@ -129,47 +134,42 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Sales Pipeline */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle data-testid="text-pipeline-title">Sales Pipeline</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Drag and drop to update lead status
-                  </p>
-                </div>
-                <Button variant="secondary" data-testid="button-filter-pipeline">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                  </svg>
-                  Filter
-                </Button>
+          {/* Enhanced Sales Pipeline */}
+          <div className="glass-card p-6 animate-slide-in-up">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-foreground" data-testid="text-pipeline-title">Sales Pipeline</h3>
+                <p className="text-muted-foreground mt-1">
+                  Drag and drop to update lead status
+                </p>
               </div>
-            </CardHeader>
-            <CardContent>
-              <KanbanBoard opportunities={opportunities || []} loading={opportunitiesLoading} />
-            </CardContent>
-          </Card>
+              <button className="glass-button" data-testid="button-filter-pipeline">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                </svg>
+                Filter
+              </button>
+            </div>
+            <KanbanBoard opportunities={opportunities || []} loading={opportunitiesLoading} />
+          </div>
 
-          {/* Bottom Section */}
+          {/* Enhanced Bottom Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Leads */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle data-testid="text-recent-leads-title">Recent Leads</CardTitle>
-                  <Button variant="ghost" size="sm" data-testid="link-view-all-leads">
-                    View All
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="glass-card p-6 animate-fade-in-scale">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-bold text-foreground" data-testid="text-recent-leads-title">Recent Leads</h3>
+                <button className="text-primary hover:text-primary/80 transition-colors text-sm font-medium" data-testid="link-view-all-leads">
+                  View All →
+                </button>
+              </div>
+              <div className="space-y-4">
                 {recentContacts?.slice(0, 4).map((contact: any, index: number) => (
                   <div 
                     key={contact.id} 
-                    className="flex items-start justify-between p-4 bg-secondary rounded-lg hover:bg-muted transition-colors cursor-pointer"
+                    className="flex items-start justify-between p-4 bg-secondary/50 rounded-xl hover:bg-secondary/80 transition-all duration-300 cursor-pointer hover-lift"
                     data-testid={`card-lead-${contact.id}`}
+                    style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <div className="flex items-start space-x-3">
                       <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-semibold">
@@ -190,20 +190,18 @@ export default function Dashboard() {
                     {getLeadTemperatureBadge(contact.leadTemperature)}
                   </div>
                 ))}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Lead Sources */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle data-testid="text-lead-sources-title">Lead Sources</CardTitle>
-                  <Button variant="ghost" size="sm" data-testid="link-view-report">
-                    View Report
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="glass-card p-6 animate-fade-in-scale">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-bold text-foreground" data-testid="text-lead-sources-title">Lead Sources</h3>
+                <button className="text-primary hover:text-primary/80 transition-colors text-sm font-medium" data-testid="link-view-report">
+                  View Report →
+                </button>
+              </div>
+              <div className="space-y-4">
                 {leadSources?.map((source: any) => (
                   <div key={source.source}>
                     <div className="flex items-center justify-between mb-2">
@@ -266,7 +264,7 @@ export default function Dashboard() {
                   </>
                 )}
 
-                <div className="mt-6 pt-6 border-t border-border">
+                <div className="mt-6 pt-6 border-t border-border/50">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Total Leads This Month</span>
                     <span className="text-xl font-bold text-foreground" data-testid="text-total-leads">
@@ -274,64 +272,78 @@ export default function Dashboard() {
                     </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          {/* Marketing Performance */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle data-testid="text-marketing-title">Marketing Performance</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    AI-generated content and engagement metrics
-                  </p>
-                </div>
-                <Button variant="secondary" data-testid="button-marketing-timeframe">
-                  Last 30 Days
-                </Button>
+          {/* Enhanced Marketing Performance */}
+          <div className="glass-card p-6 animate-slide-in-up">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold text-foreground" data-testid="text-marketing-title">Marketing Performance</h3>
+                <p className="text-muted-foreground mt-1">
+                  AI-generated content and engagement metrics
+                </p>
               </div>
-            </CardHeader>
-            <CardContent>
+              <button className="glass-button" data-testid="button-marketing-timeframe">
+                Last 30 Days
+              </button>
+            </div>
+            <div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="bg-secondary rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="bg-secondary/50 rounded-xl p-6 hover-lift">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-sm text-muted-foreground">Blog Posts Published</span>
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
+                    <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    </div>
                   </div>
-                  <p className="text-3xl font-bold text-foreground" data-testid="text-blog-posts-count">
+                  <p className="text-3xl font-bold text-foreground mb-1" data-testid="text-blog-posts-count">
                     {aiContent?.filter((c: any) => c.contentType === 'blog_article').length || 0}
                   </p>
-                  <p className="text-xs text-green-400 mt-1">+2 from last month</p>
+                  <p className="text-xs text-green-400 flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    +2 from last month
+                  </p>
                 </div>
 
-                <div className="bg-secondary rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="bg-secondary/50 rounded-xl p-6 hover-lift">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-sm text-muted-foreground">Email Campaigns Sent</span>
-                    <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
                   </div>
-                  <p className="text-3xl font-bold text-foreground" data-testid="text-email-campaigns-count">
+                  <p className="text-3xl font-bold text-foreground mb-1" data-testid="text-email-campaigns-count">
                     {aiContent?.filter((c: any) => c.contentType === 'email_newsletter').length || 0}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">42% open rate</p>
+                  <p className="text-xs text-muted-foreground">42% open rate</p>
                 </div>
 
-                <div className="bg-secondary rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="bg-secondary/50 rounded-xl p-6 hover-lift">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-sm text-muted-foreground">Social Posts</span>
-                    <svg className="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                    </svg>
+                    <div className="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                      </svg>
+                    </div>
                   </div>
-                  <p className="text-3xl font-bold text-foreground" data-testid="text-social-posts-count">
+                  <p className="text-3xl font-bold text-foreground mb-1" data-testid="text-social-posts-count">
                     {aiContent?.filter((c: any) => c.contentType === 'social_post').length || 0}
                   </p>
-                  <p className="text-xs text-green-400 mt-1">3.2K engagement</p>
+                  <p className="text-xs text-green-400 flex items-center">
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                    </svg>
+                    3.2K engagement
+                  </p>
                 </div>
               </div>
 
@@ -339,15 +351,15 @@ export default function Dashboard() {
               <div>
                 <h4 className="text-sm font-semibold text-foreground mb-4">Recent AI-Generated Content</h4>
                 <div className="space-y-3">
-                  {aiContent?.slice(0, 3).map((content: any) => (
-                    <div key={content.id} className="flex items-start space-x-3 p-3 bg-secondary rounded-lg">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded flex items-center justify-center flex-shrink-0">
-                        <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {aiContent?.slice(0, 3).map((content: any, index: number) => (
+                    <div key={content.id} className="flex items-start space-x-3 p-4 bg-secondary/50 rounded-xl hover-lift" style={{ animationDelay: `${index * 100}ms` }}>
+                      <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-foreground" data-testid={`text-content-title-${content.id}`}>
+                        <p className="text-sm font-semibold text-foreground" data-testid={`text-content-title-${content.id}`}>
                           {content.title || 'Untitled Content'}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -359,14 +371,21 @@ export default function Dashboard() {
                       </Badge>
                     </div>
                   )) || (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      No AI-generated content yet. Start creating with the AI Agents tab.
-                    </p>
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        No AI-generated content yet. Start creating with the AI Agents tab.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </main>
     </div>

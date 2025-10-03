@@ -234,20 +234,21 @@ You represent a craftsman-owned business that values quality, integrity, and cus
       <Sidebar />
       
       <main className="flex-1 ml-64">
-        {/* Header */}
-        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
+        {/* Enhanced Header */}
+        <header className="sticky top-0 z-50 backdrop-blur-glass border-b border-border/50">
           <div className="flex items-center justify-between px-8 py-4">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground" data-testid="text-page-title">
+            <div className="animate-fade-in-scale">
+              <h2 className="section-title text-foreground" data-testid="text-page-title">
                 AI Agent Framework
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1">
                 Configure your OpenRouter-powered automation agents
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="text-sm text-muted-foreground">
-                API Status: <span className="text-green-400 font-medium">Connected</span>
+              <div className="flex items-center space-x-2 px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-green-400 font-medium">API Connected</span>
               </div>
             </div>
           </div>
@@ -255,35 +256,35 @@ You represent a craftsman-owned business that values quality, integrity, and cus
 
         {/* Content */}
         <div className="p-8 space-y-8">
-          {/* API Configuration */}
-          <Card className="bg-secondary/50 border-primary/20">
-            <CardContent className="pt-6">
-              <div className="flex items-start space-x-3">
-                <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* Enhanced API Configuration */}
+          <div className="glass-card p-6 animate-fade-in-scale">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                 </svg>
-                <div className="flex-1">
-                  <h4 className="font-medium text-foreground mb-2" data-testid="text-api-title">
-                    OpenRouter API Configuration
-                  </h4>
-                  <div className="code-block font-mono text-sm">
-                    <div className="text-muted-foreground">// API Key (Secured)</div>
-                    <div className="text-primary" data-testid="text-api-key">
-                      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
-                    </div>
-                    <div className="text-muted-foreground mt-2">// Endpoint</div>
-                    <div className="text-blue-400" data-testid="text-api-endpoint">
-                      https://openrouter.ai/api/v1/chat/completions
-                    </div>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-bold text-foreground mb-3" data-testid="text-api-title">
+                  OpenRouter API Configuration
+                </h4>
+                <div className="code-block font-mono text-sm">
+                  <div className="text-muted-foreground">// API Key (Secured)</div>
+                  <div className="text-primary" data-testid="text-api-key">
+                    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
+                  </div>
+                  <div className="text-muted-foreground mt-2">// Endpoint</div>
+                  <div className="text-blue-400" data-testid="text-api-endpoint">
+                    https://openrouter.ai/api/v1/chat/completions
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Tabs */}
-          <div className="border-b border-border">
-            <div className="flex space-x-4">
+          {/* Enhanced Tabs */}
+          <div className="border-b border-border/50">
+            <div className="flex space-x-1">
               <button
                 className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
                 onClick={() => setActiveTab('overview')}
@@ -301,107 +302,119 @@ You represent a craftsman-owned business that values quality, integrity, and cus
             </div>
           </div>
 
-          {/* Agent Overview Tab */}
+          {/* Enhanced Agent Overview Tab */}
           {activeTab === 'overview' && (
-            <div className="space-y-6">
-              {agentConfigs.map((config) => (
-                <AgentConfigCard
-                  key={config.agentType}
-                  agentType={config.agentType}
-                  title={config.title}
-                  description={config.description}
-                  model={config.model}
-                  systemPrompt={config.systemPrompt}
-                  isActive={config.isActive}
-                />
+            <div className="space-y-6 animate-slide-in-up">
+              {agentConfigs.map((config, index) => (
+                <div key={config.agentType} style={{ animationDelay: `${index * 100}ms` }}>
+                  <AgentConfigCard
+                    agentType={config.agentType}
+                    title={config.title}
+                    description={config.description}
+                    model={config.model}
+                    systemPrompt={config.systemPrompt}
+                    isActive={config.isActive}
+                  />
+                </div>
               ))}
             </div>
           )}
 
-          {/* Generate Content Tab */}
+          {/* Enhanced Generate Content Tab */}
           {activeTab === 'generate' && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle data-testid="text-generate-title">Generate AI Content</CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Use our AI agents to create blog posts, newsletters, and social media content
+            <div className="space-y-6 animate-slide-in-up">
+              <div className="glass-card p-6">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-foreground mb-2" data-testid="text-generate-title">Generate AI Content</h3>
+                  <p className="text-muted-foreground">
+                    Use our AI agents to create blog posts, newsletters, and social media content with emoji support
                   </p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">
+                      <label className="text-sm font-semibold text-foreground mb-3 block">
                         Select Agent
                       </label>
                       <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-                        <SelectTrigger data-testid="select-agent">
+                        <SelectTrigger className="bg-secondary/50 border-border/50" data-testid="select-agent">
                           <SelectValue placeholder="Choose an AI agent..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="blog">Blog Agent</SelectItem>
-                          <SelectItem value="newsletter">Newsletter Agent</SelectItem>
-                          <SelectItem value="social">Social Media Agent</SelectItem>
-                          <SelectItem value="capo">Capo Agent</SelectItem>
+                          <SelectItem value="blog">📝 Blog Agent</SelectItem>
+                          <SelectItem value="newsletter">📧 Newsletter Agent</SelectItem>
+                          <SelectItem value="social">📱 Social Media Agent</SelectItem>
+                          <SelectItem value="capo">🎯 Capo Agent</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                     
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">
+                      <label className="text-sm font-semibold text-foreground mb-3 block">
                         Content Type (Optional)
                       </label>
                       <Select value={contentType} onValueChange={setContentType}>
-                        <SelectTrigger data-testid="select-content-type">
+                        <SelectTrigger className="bg-secondary/50 border-border/50" data-testid="select-content-type">
                           <SelectValue placeholder="Select content type..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="blog_article">Blog Article</SelectItem>
-                          <SelectItem value="email_newsletter">Email Newsletter</SelectItem>
-                          <SelectItem value="social_post">Social Media Post</SelectItem>
-                          <SelectItem value="marketing_campaign">Marketing Campaign</SelectItem>
+                          <SelectItem value="blog_article">📄 Blog Article</SelectItem>
+                          <SelectItem value="email_newsletter">📧 Email Newsletter</SelectItem>
+                          <SelectItem value="social_post">📱 Social Media Post</SelectItem>
+                          <SelectItem value="marketing_campaign">🎯 Marketing Campaign</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">
+                    <label className="text-sm font-semibold text-foreground mb-3 block">
                       Content Prompt
                     </label>
                     <Textarea
-                      placeholder="Describe what you want the AI to create. Be specific about topics, tone, length, and any special requirements..."
+                      placeholder="Describe what you want the AI to create. Be specific about topics, tone, length, and any special requirements... (e.g., 'Write a blog post about waterfront construction safety tips with emojis')"
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       rows={6}
+                      className="bg-secondary/50 border-border/50 resize-none"
                       data-testid="textarea-prompt"
                     />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      💡 Tip: Include "with emojis" in your prompt for engaging social media content
+                    </p>
                   </div>
                   
-                  <Button
+                  <button
                     onClick={handleGenerateContent}
                     disabled={generateContentMutation.isPending || !selectedAgent || !prompt.trim()}
-                    className="w-full"
+                    className="premium-button w-full"
                     data-testid="button-generate-content"
                   >
                     {generateContentMutation.isPending ? (
                       <>
                         <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent mr-2"></div>
-                        Generating...
+                        Generating Content...
                       </>
                     ) : (
-                      'Generate Content'
+                      <>
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Generate Content
+                      </>
                     )}
-                  </Button>
-                </CardContent>
+                  </button>
+                </div>
+              </div>
               </Card>
 
-              {/* Recent Generations */}
-              <Card>
-                <CardHeader>
-                  <CardTitle data-testid="text-recent-title">Recent AI Generations</CardTitle>
-                </CardHeader>
-                <CardContent>
+              {/* Enhanced Recent Generations */}
+              <div className="glass-card p-6">
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-foreground mb-2" data-testid="text-recent-title">Recent AI Generations</h3>
+                  <p className="text-muted-foreground">Your latest AI-generated content with emoji support</p>
+                </div>
+                <div>
                   {isLoading ? (
                     <div className="text-center py-8">
                       <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
@@ -412,16 +425,16 @@ You represent a craftsman-owned business that values quality, integrity, and cus
                       {aiContent.map((content: any) => (
                         <div 
                           key={content.id} 
-                          className="flex items-start space-x-3 p-4 bg-secondary rounded-lg"
+                          className="flex items-start space-x-4 p-4 bg-secondary/50 rounded-xl hover-lift"
                           data-testid={`card-content-${content.id}`}
                         >
-                          <div className="w-8 h-8 bg-primary/20 rounded flex items-center justify-center flex-shrink-0">
-                            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                             </svg>
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium text-foreground" data-testid={`text-content-title-${content.id}`}>
+                            <h4 className="font-semibold text-foreground" data-testid={`text-content-title-${content.id}`}>
                               {content.title || 'Untitled Content'}
                             </h4>
                             <p className="text-sm text-muted-foreground mt-1">
@@ -432,17 +445,19 @@ You represent a craftsman-owned business that values quality, integrity, and cus
                               {content.publishedAt && ` • Published: ${new Date(content.publishedAt).toLocaleDateString()}`}
                             </p>
                           </div>
-                          <Badge variant={content.status === 'published' ? 'default' : 'secondary'}>
+                          <Badge variant={content.status === 'published' ? 'default' : 'secondary'} className="ml-2">
                             {content.status}
                           </Badge>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8">
-                      <svg className="w-16 h-16 text-muted-foreground mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                      </svg>
+                    <div className="text-center py-12">
+                      <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                      </div>
                       <p className="text-muted-foreground" data-testid="text-no-content">
                         No AI-generated content yet
                       </p>
@@ -451,8 +466,8 @@ You represent a craftsman-owned business that values quality, integrity, and cus
                       </p>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           )}
         </div>
