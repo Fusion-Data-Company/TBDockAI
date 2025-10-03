@@ -1,0 +1,15 @@
+Component
+Purpose
+Implementation
+Blog & newsletter manager
+Generate, schedule and publish blog posts and newsletters.  Provide templates consistent with the dark‑navy aesthetic and bold typography of tbdock.com.  Posts can educate readers about dock maintenance, lakefront living, property value and showcase before/after projects—topics aligned with the current blog .
+Integrate an AI content generator (e.g., GPT‑4 or other LLM) with custom prompts to draft articles.  Editors can adjust tone and add photos.  Newsletter builder can create monthly emails summarizing blog posts, promotions and project updates.  Include personalization tokens and segmentation based on lead status.  Connect to email service providers (Mailchimp, SendGrid) via API.
+Social‑media scheduler
+Maintain a consistent presence on Facebook, Instagram, LinkedIn and YouTube.  AI‑powered copywriting suggests captions and hashtags.  Scheduling ensures posts go live at optimal times and reduces manual effort .
+Build a module that uses APIs for each social platform to schedule posts.  Include a calendar view showing upcoming posts.  Use AI to repurpose blog content into bite‑sized social media updates (e.g., before‑and‑after pictures with tips).  Provide analytics on engagement.
+Email & SMS automation
+Automate follow‑ups, appointment reminders and nurturing sequences.  Marketing automation improves lead management and ensures no opportunity is missed .
+Create workflows triggered by lead status changes.  For example, send an introductory email when a lead is captured, a value‑based email after an estimate is sent, and a reminder if no response is received.  Integrate SMS for urgent scheduling (e.g., emergency repair leads).
+Personalized content & segmentation
+Delivering relevant information based on lead type improves engagement .
+Use lead data (project type, urgency, interests) to tailor blog suggestions, newsletters and follow‑ups.  The content engine can automatically insert relevant case studies or testimonials into emails.

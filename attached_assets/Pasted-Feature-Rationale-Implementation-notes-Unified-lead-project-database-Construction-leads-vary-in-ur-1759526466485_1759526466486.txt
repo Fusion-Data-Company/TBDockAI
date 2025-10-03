@@ -1,0 +1,21 @@
+Feature
+Rationale
+Implementation notes
+Unified lead & project database
+Construction leads vary in urgency and stage; storing all contacts and project information in one system helps track where prospects are in the funnel .
+Use a relational database (e.g., PostgreSQL) with tables for Contacts, Projects, Opportunities, Tasks and Interactions.  Each project can link multiple contacts, reflecting the multi‑stakeholder nature of construction .
+Lead capture & qualification
+Web forms embedded on tbdock.com should send data to the CRM automatically.  Lead fields include contact details, project type, timeline and urgency.  Automated lead scoring and segmentation are recommended for prioritizing follow‑up .
+Provide API endpoints for the website to submit leads.  Integrate spam protection (reCAPTCHA).  Score leads based on completeness and engagement; categorize as hot, warm or cold.
+Sales pipeline & bid management
+Construction firms benefit from tracking leads through a bid/estimate process.  Smart CRM implementation can improve bid performance and revenue .  Features should include automated bid tracking, change‑order management and RFI tracking .
+Implement a Kanban board view (columns: New Lead, Qualification, Proposal Sent, Negotiation, Closed Won/Lost).  Attach estimates, drawings and RFIs to each opportunity.  Provide reminders for follow‑ups and bid deadlines.
+Document management
+Managing drawings, permits and versions is critical in construction .
+Integrate a file storage module (e.g., S3‑compatible storage).  Support versioning, digital drawing markup and secure sharing.  Provide mobile‑friendly access for field teams.
+Field & office collaboration
+Delays and miscommunication between office and field teams result in lost opportunities .  The platform should allow real‑time updates, photo/video uploads, daily logs and offline capability .
+Build a responsive web app/mobile app with offline caching.  Field crews can upload progress photos and notes; the office sees updates instantly when connectivity is restored.
+Contact & stakeholder management
+Projects involve general contractors, subcontractors, suppliers and property owners .
+Provide role‑based access control so each stakeholder has appropriate visibility.  Allow multiple contacts per project, shared address books and permission management .  Integrate with external calendars (Google/Outlook) for scheduling.

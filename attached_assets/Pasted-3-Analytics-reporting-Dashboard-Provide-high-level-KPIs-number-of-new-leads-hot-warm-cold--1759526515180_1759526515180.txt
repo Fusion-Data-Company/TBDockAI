@@ -1,0 +1,70 @@
+3. Analytics & reporting
+	•	Dashboard – Provide high‑level KPIs: number of new leads, hot/warm/cold distribution, average bid response time, conversion rate, project pipeline value, email open rates and social engagement.  Data can be visualized through charts and tables.
+	•	Source attribution – Track where leads come from (website form, blog signup, social media, referrals).  Use analytics to focus efforts on channels delivering the most profitable projects ￼.
+	•	Project profitability & ROI – Compare estimated vs actual costs and durations.  Use historical data to improve future bids ￼.
+
+4. Intelligent sales assistant (11 Labs agent)
+
+The platform will integrate a voice‑enabled conversational agent using ElevenLabs’ voice synthesis and a language‑model backend.  The agent will greet visitors, qualify leads and schedule appointments following Sandler principles.
+
+Conversation flow (Sandler‑style script)
+	1.	Opening & rapport –
+	•	Greeting: “Hello!  This is T&B Dock, thanks for calling.  My name is [Agent Name].  May I ask who I’m speaking with?”  (Use a warm tone; build rapport by asking how the caller’s day is going.)
+	•	Purpose: “I want to make the most of our time today.  Before we dive in, may I understand what prompted you to reach out about your dock?” – establishing an upfront contract ￼.
+	2.	Qualifying & pain discovery –
+	•	Ask open‑ended questions: “What inspired you to consider building or repairing a dock?”  “What’s the biggest challenge you’ve experienced with your waterfront property?”  Use follow‑ups: “How long have you been dealing with this issue, and what have you tried so far?”  These questions uncover hidden pain points ￼.
+	•	Quantify impact: “How is this problem affecting your day‑to‑day life or property value?”  “What happens if nothing changes over the next year?”  Emphasize ROI and consequences.
+	•	Budget exploration: “Everyone has a budget in mind; have you thought about what an ideal solution would be worth?”  “Have you set aside funds for this project?” ￼.  Avoid pricing details at this stage.
+	•	Decision process: “Who else will be involved in deciding how to move forward?”  Determine timeline and authority ￼.
+	3.	Value positioning & closing for appointment –
+	•	Summarize pain and connect to T&B Dock’s expertise: “It sounds like your dock has [issue], and it’s impacting [effect].  We specialise in building long‑lasting, steel‑truss docks and repairing existing structures ￼.  Our clients appreciate our craftsmanship and personalized service.”
+	•	Offer solution and schedule: “The next step is to have our expert visit your property for a free estimate and inspection.  What day this week works best for you?”  Use multiple options (e.g., Wednesday afternoon or Friday morning).  The agent should confirm contact details and send a calendar invite.
+	•	If the caller isn’t ready: offer to send educational materials (blog articles on dock maintenance) and schedule a follow‑up call.
+	4.	Wrap up & confirmation –
+	•	Recap appointment details and any agreed next steps.
+	•	Thank the prospect and assure them they’ll receive an email/SMS confirmation.
+
+Technical implementation – Use ElevenLabs’ voice synthesis API to provide natural‑sounding speech.  Integrate the agent with the CRM so it can read and update lead records, log call summaries and trigger follow‑up workflows.  The agent should be configurable (tone, script variations) and capable of escalating to a human rep when necessary.
+
+5. Content strategy & calendar
+	•	Blog topics – Build on the existing themes (lakefront living, maintenance, property value) and expand into areas like “Choosing the right materials for your dock,” “Seasonal dock care checklist,” “Before & after project showcases,” “Permitting & regulations for waterfront structures,” and “Enhancing lakefront property with accessories.”  Use AI to generate outlines and drafts; the team can add technical details and images.
+	•	Newsletter cadence – Send a monthly newsletter featuring:
+	1.	A featured project spotlight with before/after pictures.
+	2.	A blog article summary with a link to the full post.
+	3.	Tips for dock owners (maintenance, safety, environmental considerations).
+	4.	Promotions or seasonal services (e.g., tarp installation in autumn).
+	5.	An invitation to schedule a free estimate.
+	•	Social media – Post 2–3 times per week on Facebook/Instagram showing progress photos, time‑lapse videos of builds, testimonials, staff highlights and educational reels.  Use AI to suggest captions and trending hashtags.
+	•	Lead magnets – Offer downloadable checklists (e.g., “Dock Maintenance Checklist for Spring”) in exchange for email addresses.  These downloads feed into the CRM and trigger nurturing sequences.
+
+6. Technology stack & architecture
+	1.	Backend – Use a scalable web framework (e.g., Node.js/Express or Python/Django) with PostgreSQL or MySQL for relational data.  The CRM, content engine and automation workflows can be built as microservices.  Integration with n8n or Make.com could orchestrate workflows (e.g., capturing leads and triggering emails), aligning with the user’s expertise.
+	2.	Frontend – Build a responsive SPA using React or Vue.js.  The UI should match TBDock’s dark‑navy aesthetic: a dark header bar with gold accents, simple typography and large action buttons.  Provide a left‑hand navigation menu with modules: Dashboard, Leads, Projects, Content, Marketing, Reports, Settings.  Use a Kanban board for pipeline management and card‑style layouts for blog posts.  Keep forms minimalistic and ensure accessibility.
+	3.	Integrations –
+	•	Website – Provide embed codes for lead forms and chat/voice widget.  Data flows through secure API endpoints to the CRM.
+	•	Email/SMS – Integrate with SendGrid or Twilio for automated messaging.
+	•	Calendar – Integrate with Google Calendar or Outlook to book estimates.
+	•	Social platforms – Use official APIs for Facebook, Instagram and LinkedIn scheduling.
+	4.	Security – Implement HTTPS, encrypted storage for sensitive data, role‑based access control and audit logging.  Ensure compliance with privacy regulations (e.g., GDPR/CCPA) for email opt‑ins.
+
+7. Implementation roadmap
+	1.	Discovery & Requirements (Week 1–2) – Meet with TBDock stakeholders to map workflows, pain points and desired outcomes.  Catalogue existing data (contacts, projects).  Define KPIs.
+	2.	Platform design (Week 3–4) – Create wireframes and UI mock‑ups matching the company’s aesthetic.  Finalize data model and integration points.  Choose technology stack and hosting environment.
+	3.	Core CRM development (Week 5–8) – Build contact, project and opportunity modules with bid tracking, document management and basic reporting.  Implement forms for lead capture and embed them on the website.
+	4.	Marketing & content modules (Week 9–12) – Integrate AI content generation, blog editor, newsletter builder and social scheduler.  Configure marketing automation workflows (email/SMS sequences, lead scoring).
+	5.	Voice agent integration (Week 13–14) – Develop the ElevenLabs voice bot using the Sandler‑style script.  Train the agent with sample dialogues and connect it to the CRM.  Create fallback paths for escalation to human reps.
+	6.	Testing & QA (Week 15–16) – Conduct user acceptance testing, refine UI/UX, test lead flows, and validate analytics.  Run security and performance tests.
+	7.	Training & deployment (Week 17–18) – Train TBDock staff on using the platform, marketing tools and voice agent.  Deploy the system, migrate existing data and monitor initial usage.
+	8.	Iteration & optimization (ongoing) – Collect feedback, improve workflows, add features such as AI‑powered forecasting, and expand into additional marketing channels.  Evaluate ROI regularly and adjust the content strategy.
+
+Agent framework
+
+To automate content creation and distribution, embed an agent‑based architecture using your OpenRouter API key.  Set up a central “Capo Agent” that orchestrates specialized sub‑agents.  These agents leverage different models via OpenRouter; choose the models listed or similar ones available.
+	1.	Central Dispatch (Capo Agent) – Acts as the gatekeeper.  It receives high‑level commands from the user or CRM triggers, dispatches tasks to the proper sub‑agent, monitors progress, and consolidates outputs.  It manages API keys securely and routes requests to the appropriate model via OpenRouter.
+	2.	Blog Agent – Generates long‑form articles.  Recommended models: GPT‑4 or Claude 3 for their ability to handle nuanced, structured writing.  This agent is primed with TBDock’s style guide, brand voice, SEO keywords and product information.  It uses prompts that outline article topics (e.g., maintenance tips, property value) and returns polished drafts ready for human review.
+	3.	Newsletter Agent – Synthesizes recent blog posts, project updates and promotions into succinct newsletters.  Use a summarization‑efficient model like Llama 3 or Mixtral.  This agent pulls key points from existing content, assembles a narrative, and formats it for email delivery.  It supports personalization by inserting subscriber names or segment‑specific content.
+	4.	Social Media Agent – Crafts short, engaging updates tailored to each platform.  Use a fine‑tuned version of GPT‑3.5 Turbo or Llama 2, trained on TBDock’s past posts, product descriptions and testimonials.  It produces captions, suggests hashtags and recommends optimal posting times.  The agent can also repurpose blog paragraphs into social snippets.
+	5.	Data & Fine‑Tuning Pipeline – Maintain a structured knowledge base (e.g., JSON or database) containing updated information on projects, customer feedback, and product details.  Regularly feed this into the models for fine‑tuning or dynamic context injection.  This ensures the agents remain aligned with the latest company data.
+	6.	Integration Layer – Each sub‑agent connects to its designated model endpoint through the OpenRouter API.  The Capo Agent handles authentication and error management.  When the blog agent finishes a draft, it hands the article back to the Capo Agent, which then triggers the marketing module or sends it for human review.  The same pattern applies for newsletter and social media content.
+
+By combining this agent framework with the CRM, marketing automation, content strategy, analytics and voice assistant described above, you can build a modern, AI‑driven platform that elevates TBDock’s business while preserving their brand aesthetic and craftsmanship.
