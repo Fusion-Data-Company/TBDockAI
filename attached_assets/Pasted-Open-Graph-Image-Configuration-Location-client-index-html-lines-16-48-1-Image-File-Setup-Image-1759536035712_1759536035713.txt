@@ -1,0 +1,41 @@
+Open Graph Image Configuration
+Location: client/index.html (lines 16-48)
+
+1. Image File Setup:
+Image stored at: /attached_assets/generated_images/Fusion_Data_Company_logo_0bbe5c5b.png
+Image dimensions: 1200×630 pixels (Facebook/LinkedIn recommended size)
+Format: PNG
+2. Complete Meta Tags Implementation:
+<!-- ========== OPEN GRAPH PROTOCOL TAGS ========== -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Fusion Data Co" />
+<meta property="og:title" content="Fusion Data Co - Enterprise CRM Sales Platform" />
+<meta property="og:description" content="Advanced enterprise CRM system for sales teams..." />
+<meta property="og:image" content="https://YOUR-REPLIT-URL.replit.dev/attached_assets/generated_images/YOUR_IMAGE.png" />
+<meta property="og:image:secure_url" content="https://YOUR-REPLIT-URL.replit.dev/attached_assets/generated_images/YOUR_IMAGE.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Fusion Data Co - Enterprise CRM Sales Platform" />
+<meta property="og:url" content="https://YOUR-REPLIT-URL.replit.dev/" />
+<meta property="og:locale" content="en_US" />
+<!-- ========== TWITTER CARD TAGS ========== -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@FusionDataCo" />
+<meta name="twitter:creator" content="@FusionDataCo" />
+<meta name="twitter:title" content="Fusion Data Co - Enterprise CRM Sales Platform" />
+<meta name="twitter:description" content="Advanced enterprise CRM system for sales teams..." />
+<meta name="twitter:image" content="https://YOUR-REPLIT-URL.replit.dev/attached_assets/generated_images/YOUR_IMAGE.png" />
+<meta name="twitter:image:alt" content="Fusion Data Co - Enterprise CRM Sales Platform" />
+3. Key Points:
+✅ Image URL must be absolute (full HTTPS URL, not relative path)
+✅ Image must be publicly accessible (no authentication required)
+✅ Both og:image and og:image:secure_url should have the same HTTPS URL
+✅ Include dimensions (og:image:width and og:image:height)
+✅ Twitter requires twitter:card type set to "summary_large_image"
+✅ Alt text for accessibility
+
+4. File Serving:
+The Vite setup automatically serves files from /attached_assets/ as static assets - no special configuration needed beyond placing the image in that folder.
+
+Pass this to your other agent and they should be able to replicate the working setup! 🚀
