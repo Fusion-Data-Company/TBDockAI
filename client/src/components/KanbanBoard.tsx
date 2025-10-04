@@ -4,6 +4,7 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface Opportunity {
   id: number;
@@ -14,9 +15,15 @@ interface Opportunity {
   probability?: number;
   expectedCloseDate?: string;
   createdAt: string;
+  updatedAt?: string;
+  nextAction?: string;
+  nextActionDate?: string;
   contact?: {
     firstName: string;
     lastName: string;
+    email?: string;
+    phone?: string;
+    company?: string;
   };
 }
 
@@ -76,6 +83,7 @@ const STAGES = [
 export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps) {
   const [draggedCard, setDraggedCard] = useState<Opportunity | null>(null);
   const [dragOverStage, setDragOverStage] = useState<string | null>(null);
+  const [selectedDeal, setSelectedDeal] = useState<Opportunity | null>(null);
   const { toast } = useToast();
 
   const updateStageMutation = useMutation({
@@ -243,8 +251,9 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
                   stageOpps.map((opportunity) => (
                     <div
                       key={opportunity.id}
-                      draggable
+                      draggable={true}
                       onDragStart={(e) => handleDragStart(e, opportunity)}
+                      onDragEnd={() => setDraggedCard(null)}
                       className={`group relative overflow-hidden rounded-xl p-5 cursor-grab active:cursor-grabbing transition-all duration-300 border-2 bg-card/60 backdrop-blur-sm ${
                         draggedCard?.id === opportunity.id
                           ? 'opacity-40 scale-95 rotate-2'
@@ -327,7 +336,13 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
 
                       {/* Hover Actions */}
                       <div className="opacity-0 group-hover:opacity-100 transition-all duration-200 mt-4 pt-4 border-t border-border/20 flex items-center space-x-2">
-                        <button className="flex-1 glass-button h-9 text-xs font-semibold">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedDeal(opportunity);
+                          }}
+                          className="flex-1 glass-button h-9 text-xs font-semibold"
+                        >
                           <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -372,6 +387,208 @@ export default function KanbanBoard({ opportunities, loading }: KanbanBoardProps
           <span>Update Stage</span>
         </div>
       </div>
+
+      {/* Comprehensive Deal Detail Modal */}
+      <Dialog open={!!selectedDeal} onOpenChange={() => setSelectedDeal(null)}>
+        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold gradient-text">{selectedDeal?.name}</DialogTitle>
+          </DialogHeader>
+          {selectedDeal && (
+            <div className="space-y-6 py-6">
+              {/* Deal Overview Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="glass-card p-5">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                      <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Deal Value</div>
+                      <div className="text-2xl font-black text-primary">{formatCurrency(selectedDeal.value)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass-card p-5">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
+                      <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Probability</div>
+                      <div className="text-2xl font-black text-blue-400">{selectedDeal.probability || 0}%</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass-card p-5">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
+                      <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Expected Value</div>
+                      <div className="text-2xl font-black text-green-400">
+                        {formatCurrency(parseFloat(selectedDeal.value || '0') * ((selectedDeal.probability || 0) / 100))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              {selectedDeal.contact && (
+                <div className="glass-card p-6">
+                  <h3 className="text-lg font-bold text-foreground mb-4 flex items-center">
+                    <svg className="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Contact Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">Name</div>
+                      <div className="text-base font-semibold text-foreground">
+                        {selectedDeal.contact.firstName} {selectedDeal.contact.lastName}
+                      </div>
+                    </div>
+                    {selectedDeal.contact.email && (
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">Email</div>
+                        <a href={`mailto:${selectedDeal.contact.email}`} className="text-base text-primary hover:underline">
+                          {selectedDeal.contact.email}
+                        </a>
+                      </div>
+                    )}
+                    {selectedDeal.contact.phone && (
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">Phone</div>
+                        <a href={`tel:${selectedDeal.contact.phone}`} className="text-base text-primary hover:underline">
+                          {selectedDeal.contact.phone}
+                        </a>
+                      </div>
+                    )}
+                    {selectedDeal.contact.company && (
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">Company</div>
+                        <div className="text-base font-semibold text-foreground">{selectedDeal.contact.company}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Deal Timeline */}
+              <div className="glass-card p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  Timeline & Dates
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-secondary/30 rounded-xl">
+                    <div className="text-xs text-muted-foreground mb-2">Created</div>
+                    <div className="text-base font-semibold text-foreground">
+                      {new Date(selectedDeal.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {new Date(selectedDeal.createdAt).toLocaleTimeString()}
+                    </div>
+                  </div>
+                  {selectedDeal.expectedCloseDate && (
+                    <div className="p-4 bg-secondary/30 rounded-xl">
+                      <div className="text-xs text-muted-foreground mb-2">Expected Close</div>
+                      <div className="text-base font-semibold text-foreground">
+                        {new Date(selectedDeal.expectedCloseDate).toLocaleDateString()}
+                      </div>
+                      <div className="text-xs text-primary mt-1">
+                        {Math.ceil((new Date(selectedDeal.expectedCloseDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days remaining
+                      </div>
+                    </div>
+                  )}
+                  {selectedDeal.updatedAt && (
+                    <div className="p-4 bg-secondary/30 rounded-xl">
+                      <div className="text-xs text-muted-foreground mb-2">Last Updated</div>
+                      <div className="text-base font-semibold text-foreground">
+                        {new Date(selectedDeal.updatedAt).toLocaleDateString()}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {new Date(selectedDeal.updatedAt).toLocaleTimeString()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Current Stage & Next Actions */}
+              <div className="glass-card p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                  </svg>
+                  Current Stage & Actions
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-2">Current Stage</div>
+                    <div className="flex items-center space-x-2">
+                      {STAGES.map((s) => s.id === selectedDeal.stage && (
+                        <div key={s.id} className={`inline-flex items-center px-4 py-2 ${s.lightColor} ${s.borderColor} border-2 rounded-xl`}>
+                          <span className="text-2xl mr-2">{s.icon}</span>
+                          <span className={`font-bold ${s.textColor}`}>{s.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {selectedDeal.nextAction && (
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-2">Next Action</div>
+                      <div className="p-4 bg-secondary/30 rounded-xl">
+                        <p className="text-foreground">{selectedDeal.nextAction}</p>
+                        {selectedDeal.nextActionDate && (
+                          <p className="text-xs text-primary mt-2">
+                            Due: {new Date(selectedDeal.nextActionDate).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-3 pt-4 border-t border-border/30">
+                <button className="premium-button flex-1">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                  Edit Deal
+                </button>
+                <button className="glass-button flex-1">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                  </svg>
+                  Add Task
+                </button>
+                <button className="glass-button flex-1">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                  </svg>
+                  Add Note
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
